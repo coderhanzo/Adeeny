@@ -47,7 +47,6 @@ class UserAdmin(BaseUserAdmin):
                     "first_name",
                     "last_name",
                     "phone_number",
-                    "timezone",
                 )
             },
         ),
@@ -60,8 +59,6 @@ class UserAdmin(BaseUserAdmin):
                     "is_superuser",
                     "groups",
                     "user_permissions",
-                    "institution",
-                    "institution_admin",
                 )
             },
         ),

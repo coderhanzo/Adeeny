@@ -48,4 +48,4 @@ class User(AbstractUser):
 
     @property
     def get_full_name(self):
-        return f"{self.name}"
+        return f"{self.first_name} {self.last_name}"

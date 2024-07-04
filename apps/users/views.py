@@ -1,6 +1,5 @@
 from django.shortcuts import render
-
-# Create your views here.
+from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth import get_user_model
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
@@ -22,7 +21,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.exceptions import TokenError
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from .serializers import UserSerializer, CreateUserSerializer
-from djoser.serializers import PasswordSerializer, CurrentPasswordSerializer
+from djoser.serializers import SetPasswordRetypeSerializer
 from djoser.compat import get_user_email
 from .serializers import TokenRefreshSerializer
 from django.contrib.auth import (
@@ -177,63 +176,54 @@ def logout(request):
     return drf_response
 
 
+class SetPassword(APIView):
+    def post(self, request):
+        data = self.request.data
+        print(data)
+        serializer = SetPasswordRetypeSerializer(
+            context={"request": self.request}, data=data
+        )
+        serializer.is_valid(raise_exception=True)
+
+        self.request.user.set_password(serializer.data["new_password"])
+        self.request.user.save()
+
+        if settings.PASSWORD_CHANGED_EMAIL_CONFIRMATION:
+            context = {"user": self.request.user}
+            to = [get_user_email(self.request.user)]
+            settings.EMAIL.password_changed_confirmation(self.request, context).send(to)
+
+        if settings.LOGOUT_ON_PASSWORD_CHANGE:
+            logout(self.request)
+        elif settings.CREATE_SESSION_ON_LOGIN:
+            update_session_auth_hash(self.request, self.request.user)
+        return Response({"status": 200}, status=status.HTTP_200_OK)
+
+
 @api_view(["POST"])
-@permission_classes([IsAuthenticated])
-@authentication_classes([JWTAuthentication])
 @transaction.atomic
-def set_password(request):
-    serializer = CurrentPasswordSerializer(
-        context={"request": request}, data=request.data
-    )
-    serializer.is_valid(raise_exception=True)
-    serializer = PasswordSerializer(context={"request": request}, data=request.data)
-    serializer.is_valid(raise_exception=True)
-    request.user.set_password(serializer.data["new_password"])
-    request.user.save()
-
-    if settings.DJOSER.get("PASSWORD_CHANGED_EMAIL_CONFIRMATION"):
-        context = {"user": request.user}
-        to = [get_user_email(request.user)]
-        subject = "Your password has been changed"
-        message = render_to_string("users/password_changed.html", context)
-
-        # Send email using Django's send_mail
-        send_mail(
-            subject=subject,
-            message=message,
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=to,
-            fail_silently=False,
-            html_message=message,
+def custom_password_reset_view(request):
+    email = request.data.get("email")
+    user = User.objects.filter(email=email).first()
+    if not user:
+        return Response(
+            {"error": "User with this email does not exist."},
+            status=status.HTTP_400_BAD_REQUEST,
         )
 
-    return Response(status=status.HTTP_204_NO_CONTENT)
+    # Generate password reset token and UID
+    token = default_token_generator.make_token(user)
+    uid = urlsafe_base64_encode(force_bytes(user.pk))
 
-# @api_view(["POST"])
-# @transaction.atomic
-# def custom_password_reset_view(request):
-#     email = request.data.get("email")
-#     user = User.objects.filter(email=email).first()
-#     if not user:
-#         return Response(
-#             {"error": "User with this email does not exist."},
-#             status=status.HTTP_400_BAD_REQUEST,
-#         )
+    # Construct the password reset link (to be sent via email)
+    reset_link = f"{settings.DOMAIN}/reset-password/{uid}/{token}/"
 
-#     # Generate password reset token and UID
-#     token = default_token_generator.make_token(user)
-#     uid = urlsafe_base64_encode(force_bytes(user.pk))
+    # Send an email with the password reset link
+    send_mail(
+        subject="Password Reset for Your Adeeny Account",
+        message=f"Please click the following link to reset your password: {reset_link}",
+        from_email=settings.DEFAULT_FROM_EMAIL,
+        recipient_list=[email],
+    )
 
-#     # Construct the password reset link (to be sent via email)
-#     reset_link = f"{settings.DOMAIN}/reset-password/{uid}/{token}/"
-
-#     # Send an email with the password reset link
-#     send_mail(
-#         subject="Password Reset for Your Adeeny Account",
-#         message=f"Please click the following link to reset your password: {reset_link}",
-#         from_email=settings.DEFAULT_FROM_EMAIL,
-#         recipient_list=[email],
-#     )
-
-#     return Response({"message": "Password reset link sent."}, status=status.HTTP_200_OK)
-
+    return Response({"message": "Password reset link sent."}, status=status.HTTP_200_OK)

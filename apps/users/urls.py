@@ -9,8 +9,8 @@ urlpatterns = [
     path("users/", views.signup_view, name="register"),
     path("users/me/", views.get_logged_in_user, name="get_logged_in"),
     path("users/logout/", views.logout, name="logout"),
-    path("users/set_password/", views.set_password),
+    path("users/set_password/", views.SetPassword.as_view(), name="set_password"),
     path("users/all/", views.GetUsers.as_view()),
-    # path("password-reset/", views.custom_password_reset_view),
+    path("password-reset/", views.custom_password_reset_view),
     # path("password-confirm/", views.custom_password_reset_confirm_view),
 ]
