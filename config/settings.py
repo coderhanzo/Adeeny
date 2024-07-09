@@ -32,6 +32,7 @@ THIRD_PARTY_APPS = [
     "rest_framework",
     "djoser",
     "phonenumber_field",
+    "rest_framework_gis",
 ]
 
 LOCAL_APPS = [
