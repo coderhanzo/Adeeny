@@ -25,6 +25,7 @@ DJANGO_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
+    "django.contrib.gis",
     "django.contrib.staticfiles",
 ]
 
@@ -37,8 +38,8 @@ THIRD_PARTY_APPS = [
 
 LOCAL_APPS = [
     "apps.users",
-    "apps.donation_mamagement",
-    "apps.mosque_mamagement",
+    "apps.donation_management",
+    "apps.mosque_management",
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS

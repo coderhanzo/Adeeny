@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class MosqueMamagementConfig(AppConfig):
+class DonationManagementConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'apps.mosque_mamagement'
+    name = 'apps.donation_management'

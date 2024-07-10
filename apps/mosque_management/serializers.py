@@ -1,28 +1,30 @@
 from rest_framework import serializers
 from rest_framework_gis.serializers import GeoFeatureModelSerializer
-from .models import Coordinates, Mosque, MediaFile, Sermon
-
-
-class CoordinatesSerializer(GeoFeatureModelSerializer):
-
-    class Meta:
-        model = Coordinates
-        geo_field = "location"
-        fields = "__all__"
-
+from drf_extra_fields.geo_fields import PointField
+from drf_extra_fields.fields import Base64FileField
+from .models import Mosque, MediaFile, MediaImage,Sermon
+from utils.utils import Base64File
+import base64
 
 class MosqueSerializer(serializers.ModelSerializer):
-    location = CoordinatesSerializer()
+    location = PointField()
+    certificate = Base64FileField(required=False)
 
     class Meta:
         model = Mosque
         fields = "__all__"
 
+class MediaImageSerializer(serializers.ModelSerializer):
+    image = Base64FileField()
+    class Meta:
+        model = MediaImage
+        fields = "__all__"
 
 class MediaFileSerializer(serializers.ModelSerializer):
+    file = Base64FileField()
     class Meta:
         model = MediaFile
-        fields = ['id', 'title', 'file', 'media_type', 'uploaded_at']
+        fields = "__all__"
 
 class SermonSerializer(serializers.ModelSerializer):
     audio = MediaFileSerializer(many=True, read_only=True)
