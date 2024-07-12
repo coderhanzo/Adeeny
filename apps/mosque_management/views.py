@@ -3,8 +3,8 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from django.db import transaction
-from .models import Mosque, MediaImage, MediaFile
-from .serializers import MosqueSerializer, MediaImageSerializer, MediaFileSerializer
+from .models import Mosque, MediaImage, MediaFile, Sermon, Annoucement
+from .serializers import MosqueSerializer, MediaImageSerializer, MediaFileSerializer, SermonSerializer, AnnoucementSerializer
 
 
 @api_view(["POST"])
