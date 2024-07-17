@@ -98,18 +98,18 @@ class GetUsers(generics.ListAPIView):
         return User.objects.all()
 
 
-def generate_unique_slug(model_class, title):
-    """
-    django-scheduler models aren't great but i'd rather not touch them/
-    This function is here so that the slug field in the Calendar model is unique
-    """
-    original_slug = slugify(title)
-    unique_slug = original_slug
-    num = 1
-    while model_class.objects.filter(slug=unique_slug).exists():
-        unique_slug = "{}-{}".format(original_slug, num)
-        num += 1
-    return unique_slug
+# def generate_unique_slug(model_class, title):
+#     """
+#     django-scheduler models aren't great but i'd rather not touch them/
+#     This function is here so that the slug field in the Calendar model is unique
+#     """
+#     original_slug = slugify(title)
+#     unique_slug = original_slug
+#     num = 1
+#     while model_class.objects.filter(slug=unique_slug).exists():
+#         unique_slug = "{}-{}".format(original_slug, num)
+#         num += 1
+#     return unique_slug
 
 
 @api_view(["POST"])

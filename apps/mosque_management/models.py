@@ -47,20 +47,29 @@ class Mosque(models.Model):
     )  # make the name of the imam a foreign key with the imam user/profile
     location = models.PointField(blank=True, null=True)
 
-    mosque_image = models.ManyToManyField(
-        MediaImage, blank=True, related_name="mosque_image"
-    )
-
+    # mosque_image = models.ManyToManyField(
+    #     MediaImage, blank=True, related_name="mosque_image"
+    # )
     def user_directory_path(instance, filename):
         # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
-        return "{0}/{1}".format("mosque certificate", filename)
+        return "{0}/{1}".format("mosque files", filename)
 
+    image = models.FileField(upload_to=user_directory_path, blank=True, null=True)
     certificate = models.FileField(upload_to=user_directory_path, blank=True, null=True)
 
-    additional_info = models.TextField(blank=True, null=True)
+    additional_info = models.TextField(verbose_name=_("Content"), blank=True, null=True)
 
     def __str__(self):
         return self.name if self.name else ""
+
+
+class PrayerTime(models.Model):
+    title = models.CharField(max_length=250, default="n/a")
+    time = models.TimeField(max_length=250, default="n/a")
+    updated_at = models.DateTimeField(auto_now=True, blank=True, null=True)
+
+    def __str__(self):
+        return self.title
 
 
 class Sermon(models.Model):
@@ -88,6 +97,9 @@ class Sermon(models.Model):
 class Annoucement(models.Model):
     title = models.CharField(max_length=250, default="n/a")
     description = models.TextField(blank=True, null=True)
+    date = models.DateField(blank=True, null=True)
+    time = models.TimeField(blank=True, null=True)
+    location = models.PointField(blank=True, null=True)
 
     def user_directory_path(instance, filename):
         # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>

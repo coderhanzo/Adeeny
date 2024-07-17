@@ -3,6 +3,9 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from django.db import transaction
+from rest_framework.permissions import IsAdminUser, IsAuthenticated 
+from rest_framework.views import APIView
+from rest_framework import authentication, permissions
 from .models import Mosque, MediaImage, MediaFile, Sermon, Annoucement
 from .serializers import MosqueSerializer, MediaImageSerializer, MediaFileSerializer, SermonSerializer, AnnoucementSerializer
 
@@ -38,3 +41,29 @@ def create_mosque(request):
         mosque_instance.save()
 
     return Response({"status": "success"}, status=status.HTTP_201_CREATED)
+
+
+class GetAllMosques(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    def get(self, request):
+        mosques = Mosque.objects.all()
+        serializer = MosqueSerializer(mosques, many=True)
+        return Response(serializer.data)
+
+class GetAndUpdateMosque(APIView):
+    permission_classes = [IsAdminUser]
+
+    def get(self, request, pk):
+        mosque = self.get_object(pk)
+        serializer = MosqueSerializer(mosque)
+        return Response(serializer.data)
+
+    def patch(self, request, pk):
+        mosque = self.get_object(pk)
+        serializer = MosqueSerializer(mosque, data=request.data, partial=True)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
