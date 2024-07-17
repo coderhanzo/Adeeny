@@ -1,20 +1,20 @@
 databases:
-  - name: adeeny-postgresql
+  - name: mysitedb
     plan: free
-    databaseName: adeenydb
-    user: adeenyadmin
+    databaseName: mysite
+    user: mysite
 
 services:
   - type: web
     plan: free
-    name: adeenydb
+    name: mysite
     runtime: python
     buildCommand: "./build.sh"
     startCommand: "python -m gunicorn config.asgi:application -k uvicorn.workers.UvicornWorker"
     envVars:
       - key: DATABASE_URL
         fromDatabase:
-          name: adeenydb
+          name: mysitedb
           property: connectionString
       - key: SECRET_KEY
         generateValue: true
