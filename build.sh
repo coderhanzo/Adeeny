@@ -13,4 +13,7 @@ poetry shell
 python manage.py collectstatic --noinput
 
 # migrated the database
+echo "Apply database migrations"
+
 python manage.py migrate
+

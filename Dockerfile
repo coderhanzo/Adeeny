@@ -15,17 +15,18 @@ FROM python:${PYTHON_VERSION}-slim as base
 ENV PYTHONUNBUFFERED 1
 
 # Set the working directory in the container
-WORKDIR /app
+WORKDIR /usr/src/app
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
     binutils \
     libproj-dev \
     gdal-bin \
+    pkg-config gdal proj \
     && apt-get clean
 
 # Copy only the pyproject.toml and poetry.lock files to leverage Docker cache
-COPY pyproject.toml poetry.lock /app/
+COPY pyproject.toml poetry.lock /usr/src/app/
 
 # Install Poetry
 RUN pip install poetry
@@ -34,13 +35,17 @@ RUN pip install poetry
 RUN poetry config virtualenvs.create false && poetry install --no-dev
 
 # Copy the rest of the application code
-COPY . /app/
+COPY ./build.sh /usr/src/app/build.sh
 
-# Switch to the non-privileged user to run the application.
-USER appuser
+COPY . /usr/src/app/
 
-# Expose the port Gunicorn will run on
-EXPOSE 8000
+ENTRYPOINT ["/usr/src/app/build.sh"]
 
-# Command to run Gunicorn
-CMD ["gunicorn", "config.asgi:application", "-k", "uvicorn.workers.UvicornWorker", "--bind", "0.0.0.0:8000"]
+# # Switch to the non-privileged user to run the application.
+# USER appuser
+
+# # Expose the port Gunicorn will run on
+# EXPOSE 8000
+
+# # Command to run Gunicorn
+# CMD ["gunicorn", "config.asgi:application", "-k", "uvicorn.workers.UvicornWorker", "--bind", "0.0.0.0:8000"]
