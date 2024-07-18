@@ -4,7 +4,7 @@ from phonenumber_field.modelfields import PhoneNumberField
 
 # Create your models here.
 
-class Donations(models.Model):
+class Donation(models.Model):
   name = models.CharField(max_length=200, verbose_name=_("Account Name"), blank=True, null=True)
   phone_numnber = PhoneNumberField(verbose_name=_("Phone Number"), blank=True, null=True)
   ammount = models.PositiveIntegerField(verbose_name=_("Amount"), blank=True, null=True)
@@ -13,7 +13,7 @@ class Donations(models.Model):
     return self.name
 
 
-class ProjectDonations(models.Model):
+class ProjectDonation(models.Model):
     """
     payment type will be a dropdown menu
     """

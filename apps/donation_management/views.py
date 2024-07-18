@@ -5,7 +5,7 @@ from rest_framework.decorators import api_view
 from rest_framework.views import APIView
 from rest_framework import authentication, permissions
 from rest_framework.permissions import IsAdminUser
-from .models import ProjectDonations
+from .models import ProjectDonation
 from .serializers import CreateProjectDonationSerializer
 # Create your views here.
 
@@ -19,10 +19,10 @@ def create_project_donation(request):
   return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class GetAllProjectDonations(APIView):
+class GetAllProjectDonation(APIView):
   permission_classes = [IsAdminUser]
 
   def get(self, request):
-    donations = ProjectDonations.objects.all()
+    donations = ProjectDonation.objects.all()
     serializer = CreateProjectDonationSerializer(donations, many=True)
     return Response(serializer.data)
