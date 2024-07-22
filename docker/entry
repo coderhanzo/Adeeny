@@ -1,0 +1,48 @@
+#!/bin/bash
+
+# Exit the script if any command fails
+set -o errexit
+
+# Exit the script if any command in a pipeline fails
+set -o pipefail
+
+# Exit the script if any undefined variable is used
+set -o nounset
+
+postgres_ready() {
+python << END
+import sys
+import psycopg2
+from psycopg2 import OperationalError
+
+connection = None
+
+try:
+    connection = psycopg2.connect(
+        database="${MYSQL_NAME}",
+        user="${MYSQL_USER}",
+        password="${MYSQL_PASSWORD}",
+        host="${MYSQL_HOST}",
+        port="5432",
+    )
+
+    if connection:
+        print("Connected to PostgreSQL Server")
+
+except OperationalError as e:
+    print("Error while connecting to PostgreSQL", e)
+    sys.exit(-1)
+    
+sys.exit(0)
+END
+}
+
+# Loop until postgres_ready returns a success
+until postgres_ready; do
+ >&2 echo "Waiting for PostgreSQL to become available....:-("
+ sleep 1
+done
+>&2 echo "PostgreSQL is ready!!..."
+
+# Execute the provided command (e.g., start a service)
+exec "$@"

@@ -1,0 +1,21 @@
+#!/bin/bash
+
+set -o errexit
+
+set -o pipefail
+
+set -o nounset
+
+# Apply database migrations for the 'users' app first
+# echo "Apply database migrations for the users app"
+# python manage.py migrate users
+
+# Apply database migrations
+echo "Applying general database migrations"
+python3 manage.py migrate --noinput
+
+# Collect static files
+python3 manage.py collectstatic --noinput
+
+# Start Gunicorn
+python3 -m gunicorn config.asgi:application -k uvicorn.workers.UvicornWorker

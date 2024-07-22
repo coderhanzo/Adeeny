@@ -7,56 +7,46 @@
 # You can add other services your application may depend on here, such as a
 # database or a cache. For examples, see the Awesome Compose repository:
 # https://github.com/docker/awesome-compose
+version: '3.9'
 
 services:
   djangobackend:
-    container_name: djangobackend
-    build: 
-      context: ./ADEENY
-    command: python -m gunicorn config.asgi:application -k uvicorn.workers.UvicornWorker
+    container_name: Adeeny-djangobackend
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile
+    command: /build
     volumes:
-      - ./ADEENY:/usr/src/app
-    port:
-      - 8000:8000
-
-    environment:
-      - postgresql://postgres:postgres@localhost:5432/adeenydb
+      - .:/Adeeny
+      - static_volume:/app/staticfiles
+      - media_volume:/app/mediafiles
+    expose:
+      - "8000"
     env_file:
       - .env
-
     depends_on:
-      db:
-        condition: service_healthy
-
-    develop:
-      watch:
-        - action: rebuild
-          path: .
-
-  db:
-    image: postgres
+      - mysql-db
+    ports:
+     - "8000:8000"
+  
+  mysql-db:
+    container_name: Adeeny-mysqldb
+    image: mysql:8.0
     restart: always
-    user: postgres
-    # secrets:
-    #   - db-password
-    volumes:
-      - db-data:/var/lib/postgresql/data
     environment:
-      POSTGRES_DB: mydatabase
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
-    
-    container_name: Adeeny_postgresdb
-    expose:
-      - 5432
-    healthcheck:
-      test: [ "CMD", "postgres_isready" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-# volumes:
-#   db-data:
-# secrets:
-#   db-password:
-#     file: .env
+      - MYSQL_DATABASE=${MYSQL_NAME}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_HOST=${MYSQL_HOST}
 
+    ports:
+      - "3306"
+    expose:
+      - "3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+volumes:
+  mysql_data:
+  static_volume:
+  media_volume:

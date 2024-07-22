@@ -81,21 +81,21 @@ WSGI_APPLICATION = "config.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-DATABASES = {
-    "default": dj_database_url.config(
-        default=os.environ.get("DATABASE_URL"), conn_max_age=600, engine=os.environ.get("POSTGRES_ENGINE")
-    )
-}
+# DATABASES = {
+#     "default": dj_database_url.config(
+#         default=os.environ.get("DATABASE_URL"), conn_max_age=600, engine=os.environ.get("POSTGRES_ENGINE")
+#     )
+# }
 
 
 DATABASES = {
     "default": {
-        "ENGINE": env("POSTGRES_ENGINE"),
-        "NAME": env("POSTGRES_NAME"),
-        "USER": env("POSTGRES_USER"),
-        "PASSWORD": env("POSTGRES_PASSWORD"),
-        "HOST": env("POSTGRES_HOST"),
-        "PORT": env("POSTGRES_PORT"),
+        "ENGINE": env("MYSQL_ENGINE"),
+        "NAME": env("MYSQL_NAME"),
+        "USER": env("MYSQL_USER"),
+        "PASSWORD": env("MYSQL_PASSWORD"),
+        "HOST": env("MYSQL_HOST"),
+        "PORT": env("MYSQL_PORT"),
     }
 }
 
@@ -134,13 +134,13 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
-STATIC_URL = "/static/"
+STATIC_URL = "/staticfiles/"
 
-STATICFILE_DIRS = []
+STATICFILE_DIR = []
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
-MEDIA_URL = "/media/"
-MEDIA_ROOT = BASE_DIR / "media"
+MEDIA_URL = "/mediafiles/"
+MEDIA_ROOT = BASE_DIR / "mediafiles"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
@@ -151,6 +151,8 @@ AUTH_USER_MODEL = "users.User"
 
 from datetime import timedelta
 
+DATE_FORMAT = "%Y-%m-%d"
+DATETIME_FORMAT = "%Y-%m-%d %H:%M"
 
 SIMPLE_JWT = {
     "AUTH_HEADER_TYPES": (
