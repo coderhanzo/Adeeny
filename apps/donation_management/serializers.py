@@ -6,11 +6,11 @@ from utils.utils import Base64FileField
 
 
 class CreateProjectDonationSerializer(serializers.ModelSerializer):
-    image = Base64FileField()
+    image = Base64FileField(required=False)
 
     class Meta:
         model = ProjectDonation
-        fields = ["title", "payment_type", "target_amount"]
+        fields = "__all__"
 
 
 class DonationSerializer(serializers.ModelSerializer):

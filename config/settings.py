@@ -36,6 +36,9 @@ THIRD_PARTY_APPS = [
     "djoser",
     "phonenumber_field",
     "rest_framework_gis",
+    "corsheaders",
+    "whitenoise",
+    
 ]
 
 LOCAL_APPS = [

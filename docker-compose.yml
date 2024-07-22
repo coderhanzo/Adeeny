@@ -1,13 +1,4 @@
-# Comments are provided throughout this file to help you get started.
-# If you need more help, visit the Docker Compose reference guide at
-# https://docs.docker.com/go/compose-spec-reference/
-
-# Here the instructions define your application as a service called "server".
-# This service is built from the Dockerfile in the current directory.
-# You can add other services your application may depend on here, such as a
-# database or a cache. For examples, see the Awesome Compose repository:
-# https://github.com/docker/awesome-compose
-version: '3.9'
+version: "3.9"
 
 services:
   djangobackend:
@@ -17,18 +8,20 @@ services:
       dockerfile: ./docker/Dockerfile
     command: /build
     volumes:
-      - .:/Adeeny
+      - .:/app
       - static_volume:/app/staticfiles
       - media_volume:/app/mediafiles
-    expose:
-      - "8000"
+    # expose:
+    #   - "8000"
     env_file:
       - .env
     depends_on:
       - mysql-db
     ports:
-     - "8000:8000"
-  
+      - "8000:8000"
+    networks:
+      - adeeny-network
+
   mysql-db:
     container_name: Adeeny-mysqldb
     image: mysql:8.0
@@ -39,13 +32,19 @@ services:
       - MYSQL_PASSWORD=${MYSQL_PASSWORD}
       - MYSQL_ROOT_PASSWORD=${MYSQL_PASSWORD}
       - MYSQL_HOST=${MYSQL_HOST}
-
     ports:
-      - "3306"
-    expose:
-      - "3306"
+      - "3306:3306"
+    # expose:
+    #   - "3306"
     volumes:
       - mysql_data:/var/lib/mysql
+    networks:
+      - adeeny-network
+
+networks:
+  adeeny-network:
+    driver: bridge
+
 volumes:
   mysql_data:
   static_volume:
