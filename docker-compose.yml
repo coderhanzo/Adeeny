@@ -24,7 +24,8 @@ services:
     build:
       context: .
       dockerfile: ./docker/Dockerfile
-    command: python manage.py runserver 0.0.0.0:8000
+    command: python -m gunicorn config.asgi:application -k uvicorn.workers.UvicornWorker
+    # command: python manage.py runserver 0.0.0.0:8000
     volumes:
       - .:/app
       - static_volume:/app/staticfiles
