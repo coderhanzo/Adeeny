@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
 
   mysql-db:
@@ -44,7 +42,7 @@ networks:
   adeeny-network:
     driver: bridge
 
-# volumes:
-#   mysql_data:
-#   static_volume:
-#   media_volume:
+volumes:
+  mysql_data:
+  static_volume:
+  media_volume:

@@ -25,10 +25,10 @@ WORKDIR $APP_HOME
 
 RUN pip3 install --upgrade pip && pip3 install wheel && pip3 install poetry && pip3 install mysqlclient
 
-COPY pyproject.toml poetry.lock
+COPY pyproject.toml poetry.lock .\
 
 # Install Poetry environment
-RUN poetry config virtualenvs.create false && poetry install && rm -rf $POETRY_CACHE_DIR
+RUN poetry install && rm -rf $POETRY_CACHE_DIR
 
 # old config for poetry
 # RUN poetry config virtualenvs.create false && poetry install && rm -rf $POETRY_CACHE_DIR
