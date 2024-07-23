@@ -39,7 +39,7 @@ services:
       - adeeny-network
 
   web:
-    container_name: django-web
+    container_name: Adeeny-django-web
     build:
       context: .
       dockerfile: ./docker/Dockerfile
