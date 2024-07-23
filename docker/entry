@@ -45,11 +45,6 @@ until mysql_ready; do
 done
 >&2 echo "MySQL is ready!!..."
 
-# Flush the database
-python3 manage.py flush --no-input
-
-# Apply database migrations
-python3 manage.py migrate
 
 # Execute the provided command (e.g., start a service)
 exec "$@"
