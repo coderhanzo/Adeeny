@@ -1,6 +1,5 @@
 # syntax=docker/dockerfile:1
-ARG PYTHON_VERSION=3.12.4
-FROM python:${PYTHON_VERSION}-slim as base
+FROM python:3.12-slim
 
 ENV APP_HOME=/app \
     PYTHONDONTWRITEBYTECODE=1 \
@@ -26,19 +25,22 @@ WORKDIR $APP_HOME
 
 RUN pip3 install --upgrade pip && pip3 install wheel && pip3 install poetry && pip3 install mysqlclient
 
-COPY pyproject.toml poetry.lock ./
+COPY pyproject.toml poetry.lock
 
 # Install Poetry environment
 RUN poetry config virtualenvs.create false && poetry install && rm -rf $POETRY_CACHE_DIR
 
-COPY ./docker/entry /entry
-RUN sed -i 's/\r$//g' /entry
-RUN chmod +x /entry
+# old config for poetry
+# RUN poetry config virtualenvs.create false && poetry install && rm -rf $POETRY_CACHE_DIR
+
+# COPY ./docker/entry /entry
+# RUN sed -i 's/\r$//g' /entry
+# RUN chmod +x /entry
 
 COPY ./docker/build /build
 RUN sed -i 's/\r$//g' /build
 RUN chmod +x /build
 
-COPY . .
+COPY . /app
 
-CMD ["/entry"]
+CMD ["/build"]
