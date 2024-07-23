@@ -35,11 +35,11 @@ RUN poetry config virtualenvs.create false && poetry install && rm -rf $POETRY_C
 # RUN sed -i 's/\r$//g' /entry
 # RUN chmod +x /entry
 
-COPY ./docker/build /build
-RUN sed -i 's/\r$//g' /build
-RUN chmod +x /build
+# COPY ./docker/build /build
+# RUN sed -i 's/\r$//g' /build
+# RUN chmod +x /build
 
 COPY . .
 
-# CMD ["python3", "manage.py", "runserver", "0.0.0.0:8000"]
-CMD ["/build"]
+CMD ["python3", "manage.py", "runserver", "0.0.0.0:8000"]
+# CMD ["/build"]
