@@ -35,10 +35,6 @@ COPY ./docker/entry /entry
 RUN sed -i 's/\r$//g' /entry
 RUN chmod +x /entry
 
-COPY ./docker/build /build
-RUN sed -i 's/\r$//g' /build
-RUN chmod +x /build
-
 COPY . .
 
 CMD ["/entry"]
