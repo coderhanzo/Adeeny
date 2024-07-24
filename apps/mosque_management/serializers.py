@@ -8,7 +8,7 @@ import base64
 
 
 class MosqueSerializer(serializers.ModelSerializer):
-    location = PointField()
+    # location = PointField()
     certificate = Base64FileField(required=False)
     image = Base64FileField(required=False)
 

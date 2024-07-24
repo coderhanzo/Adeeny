@@ -45,7 +45,7 @@ class Mosque(models.Model):
     imam = models.CharField(
         verbose_name=_("Imam's Name"), max_length=250
     )  # make the name of the imam a foreign key with the imam user/profile
-    location = models.PointField(blank=True, null=True)
+    location = models.CharField(max_length=250, blank=True, null=True, verbose_name=_("Mosque Location"))
 
     # mosque_image = models.ManyToManyField(
     #     MediaImage, blank=True, related_name="mosque_image"
