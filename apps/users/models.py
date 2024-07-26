@@ -10,10 +10,11 @@ from django.core.exceptions import ValidationError
 
 
 class User(AbstractUser):
-
-    # class UserTypes(models.TextChoices):
-    #     COMPANY = "COMPANY", _("Company")
-    #     REP = "REP", _("Rep")
+    class Roles(models.TextChoices):
+        IMAM = 'IMAM', _('Imam')
+        ASSCOCIATE = 'ASSOCIATE', _('Associate')
+        USER = 'USER', _('User')
+    
 
     username = None
     name = models.CharField(verbose_name=_("Name"), max_length=250, default="n/a")
@@ -21,12 +22,10 @@ class User(AbstractUser):
     phone_number = PhoneNumberField(
         verbose_name=_("Phone Number"), max_length=30, blank=True, null=True
     )
-    # user_type = models.CharField(
-    #     verbose_name=_("User Type"),
-    #     max_length=50,
-    #     choices=UserTypes.choices,
-    #     default="n/a",
-    # )
+    roles = models.CharField(
+        max_length=10, choices=Roles.choices, default=Roles.USER
+    )
+    
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = [
@@ -43,8 +42,6 @@ class User(AbstractUser):
     def __str__(self):
         return str(self.email) if self.email else ""
 
-    # def __str__(self):
-    #     return f"{self.first_name} {self.last_name}"
 
     @property
     def get_full_name(self):

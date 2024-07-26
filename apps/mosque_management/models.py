@@ -54,7 +54,8 @@ class Mosque(models.Model):
         # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
         return "{0}/{1}".format("mosque files", filename)
 
-    image = models.FileField(upload_to=user_directory_path, blank=True, null=True)
+    # image = models.FileField(upload_to=user_directory_path, blank=True, null=True)
+    image = models.CharField(verbose_name=_("mosque image"), max_length=500, blank=True, null=True)
     certificate = models.FileField(upload_to=user_directory_path, blank=True, null=True)
 
     additional_info = models.TextField(verbose_name=_("Content"), blank=True, null=True)

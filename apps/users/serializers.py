@@ -19,8 +19,18 @@ class CreateUserSerializer(UserCreateSerializer):
             "last_name",
             "phone_number",
             "password",
+            "role",
+            "is_superuser",
+            "is_staff",
         ]
 
+    def create(self, validated_data):
+        user = User.objects.create_user(**validated_data)
+        if validated_data.get("is_superuser", False):
+            user.is_superuser = True
+            user.is_staff = True
+            user.save()
+        return user
 
 class UserSerializer(serializers.ModelSerializer):
     full_name = serializers.SerializerMethodField(source="get_full_name")
@@ -35,6 +45,7 @@ class UserSerializer(serializers.ModelSerializer):
             "last_name",
             "full_name",
             "phone_number",
+            "role",
         ]
 
     def get_full_name(self, obj):

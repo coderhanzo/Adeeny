@@ -20,6 +20,7 @@ class UserAdmin(BaseUserAdmin):
         "first_name",
         "last_name",
         "is_active",
+        "role",
     ]
     list_display_links = ["id", "email"]
     list_filter = [
@@ -47,6 +48,7 @@ class UserAdmin(BaseUserAdmin):
                     "first_name",
                     "last_name",
                     "phone_number",
+                    "role",
                 )
             },
         ),
@@ -77,11 +79,12 @@ class UserAdmin(BaseUserAdmin):
                     "is_active",
                     "groups",
                     "user_permissions",
+                    "role",
                 ),
             },
         ),
     )
-    search_fields = ["email", "first_name", "last_name", "phone_number"]
+    search_fields = ["email", "first_name", "last_name", "phone_number", "role"]
 
 
 admin.site.register(User, UserAdmin)

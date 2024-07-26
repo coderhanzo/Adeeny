@@ -9,8 +9,8 @@ import base64
 
 class MosqueSerializer(serializers.ModelSerializer):
     # location = PointField()
-    certificate = Base64FileField(required=False)
-    image = Base64FileField(required=False)
+    # certificate = Base64FileField(required=False)
+    # image = Base64File(required=False)
 
     class Meta:
         model = Mosque
@@ -18,7 +18,7 @@ class MosqueSerializer(serializers.ModelSerializer):
 
 
 class MediaImageSerializer(serializers.ModelSerializer):
-    image = Base64FileField()
+    image = Base64File()
 
     class Meta:
         model = MediaImage
@@ -26,7 +26,7 @@ class MediaImageSerializer(serializers.ModelSerializer):
 
 
 class MediaFileSerializer(serializers.ModelSerializer):
-    file = Base64FileField()
+    file = Base64File()
 
     class Meta:
         model = MediaFile

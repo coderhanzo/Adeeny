@@ -111,6 +111,21 @@ class GetUsers(generics.ListAPIView):
 #         num += 1
 #     return unique_slug
 
+class CreateUserView(generics.CreateAPIView):
+    serializer_class = CreateUserSerializer
+    permission_classes = [AllowAny]
+
+class CreateAssociateView(generics.CreateAPIView):
+    serializer_class = CreateUserSerializer
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
+
+    def create(self, request):
+        if request.user.role != User.Roles.IMAM:
+            return Response({"detail": "Only imams can create associates"}, status=status.HTTP_403_FORBIDDEN)
+        request.data["role"] = User.Roles.ASSOCIATE
+        return super().create(request)
+
 
 @api_view(["POST"])
 @permission_classes([AllowAny])
@@ -123,6 +138,7 @@ def signup_view(request):
         "email": request.data.get("email"),
         "password": request.data.get("password"),
         "phone_number": request.data.get("phone_number"),
+        "role": request.data.get("role", User.Roles.USER),
         # Add other fields as needed
     }
 
@@ -174,6 +190,21 @@ def logout(request):
     drf_response = Response(status=status.HTTP_200_OK)
     drf_response.delete_cookie(settings.SIMPLE_JWT["AUTH_COOKIE"])
     return drf_response
+
+
+# Creating superadmin
+class CreateSuperAdmin(generics.CreateAPIView):
+    serializer_class = CreateUserSerializer
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
+
+    def create(self, request):
+        if request.user.is_superuser:
+            return Response({"detail": "Only superusers can create superadmins"}, status=status.HTTP_403_FORBIDDEN)
+        
+        request.data["is_superuser"] = True
+        request.data["is_staff"] = True
+        return super().create(request)
 
 
 class SetPassword(APIView):

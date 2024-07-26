@@ -12,5 +12,7 @@ urlpatterns = [
     path("users/set_password/", views.SetPassword.as_view(), name="set_password"),
     path("users/all/", views.GetUsers.as_view()),
     path("password-reset/", views.custom_password_reset_view),
-    # path("password-confirm/", views.custom_password_reset_confirm_view),
+    path("password-reset-confirm/", views.custom_password_reset_view),
+    path("create-admin/", views.CreateAdmin.as_view(), name="create_superadmin"),
+    
 ]
