@@ -19,7 +19,7 @@ class CreateUserSerializer(UserCreateSerializer):
             "last_name",
             "phone_number",
             "password",
-            "role",
+            "roles",
             "is_superuser",
             "is_staff",
         ]
@@ -45,7 +45,7 @@ class UserSerializer(serializers.ModelSerializer):
             "last_name",
             "full_name",
             "phone_number",
-            "role",
+            "roles",
         ]
 
     def get_full_name(self, obj):

@@ -123,7 +123,7 @@ class CreateAssociateView(generics.CreateAPIView):
     def create(self, request):
         if request.user.role != User.Roles.IMAM:
             return Response({"detail": "Only imams can create associates"}, status=status.HTTP_403_FORBIDDEN)
-        request.data["role"] = User.Roles.ASSOCIATE
+        request.data["roles"] = User.Roles.ASSOCIATE
         return super().create(request)
 
 
@@ -138,7 +138,7 @@ def signup_view(request):
         "email": request.data.get("email"),
         "password": request.data.get("password"),
         "phone_number": request.data.get("phone_number"),
-        "role": request.data.get("role", User.Roles.USER),
+        "roles": request.data.get("roles", User.Roles.USER),
         # Add other fields as needed
     }
 
