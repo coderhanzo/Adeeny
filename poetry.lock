@@ -447,6 +447,20 @@ djet = ["djet (>=0.3.0,<0.4.0)"]
 webauthn = ["webauthn (<1.0)"]
 
 [[package]]
+name = "drf-base64"
+version = "2.0"
+description = "DRF serializers to handle base64-encoded files"
+optional = false
+python-versions = "*"
+files = [
+    {file = "drf_base64-2.0.tar.gz", hash = "sha256:dee42f27e6ea5fb91ff85916ad1aaba222275552815430ff6a55a547e0246234"},
+]
+
+[package.dependencies]
+Django = ">=2.0"
+djangorestframework = "<4.0.0"
+
+[[package]]
 name = "drf-extra-fields"
 version = "3.7.0"
 description = "Additional fields for Django Rest Framework."
@@ -971,4 +985,4 @@ brotli = ["brotli"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "700aa6617528556cfec4e788370285daca134f6281ce4dd5c0ae872aee2c4872"
+content-hash = "d690ffa178c32667ecebc461589e5b9d4a573cd93ac7919d147c24867146ff3c"
