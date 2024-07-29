@@ -14,7 +14,6 @@ class User(AbstractUser):
         IMAM = 'IMAM', _('Imam')
         ASSCOCIATE = 'ASSOCIATE', _('Associate')
         USER = 'USER', _('User')
-    
 
     username = None
     name = models.CharField(verbose_name=_("Name"), max_length=250, default="n/a")
@@ -23,7 +22,7 @@ class User(AbstractUser):
         verbose_name=_("Phone Number"), max_length=30, blank=True, null=True
     )
     roles = models.CharField(
-        max_length=10, choices=Roles.choices, default=Roles.USER
+        max_length=10, choices=Roles.choices, default=Roles.USER, verbose_name=_("User Roles")
     )
     
 

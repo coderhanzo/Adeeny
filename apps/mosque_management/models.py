@@ -23,17 +23,19 @@ class Mosque(models.Model):
     location = models.CharField(
         max_length=250, blank=True, verbose_name=_("Mosque Location")
     )
+    lat = models.FloatField(verbose_name=_("Latitude"))
+    lat = models.FloatField(verbose_name=_("Longitude"))
 
-    # mosque_image = models.ManyToManyField(
-    #     MediaImage, blank=True, related_name="mosque_image"
-    # )
     def user_directory_path(instance, filename):
         # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
         return "{0}/{1}".format("mosque files", filename)
 
     # image = models.FileField(upload_to=user_directory_path, blank=True, null=True)
-    image = models.TextField(
-        verbose_name=_("Mosque Base64 Image"), blank=True, null=True
+    image = models.ImageField(
+        upload_to=user_directory_path,
+        verbose_name=_("Mosque Base64 Image"),
+        blank=True,
+        null=True,
     )
     certificate = models.FileField(upload_to=user_directory_path, blank=True, null=True)
 
