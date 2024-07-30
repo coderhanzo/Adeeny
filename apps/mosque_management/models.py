@@ -30,10 +30,9 @@ class Mosque(models.Model):
         # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
         return "{0}/{1}".format("mosque files", filename)
 
-    # image = models.FileField(upload_to=user_directory_path, blank=True, null=True)
     image = models.ImageField(
         upload_to=user_directory_path,
-        verbose_name=_("Mosque Base64 Image"),
+        verbose_name=_("Mosque Image"),
         blank=True,
         null=True,
     )
@@ -73,9 +72,9 @@ class Sermon(models.Model):
         # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
         return "{0}/{1}".format("sermon files", filename)
 
-    docs = models.FileField(upload_to=user_directory_path, blank=True)
-    audio = models.FileField(upload_to=user_directory_path, blank=True)
-    video = models.FileField(upload_to=user_directory_path, blank=True)
+    docs = models.FileField(upload_to=user_directory_path, blank=True, null=True)
+    audio = models.FileField(upload_to=user_directory_path, blank=True, null=True)
+    video = models.FileField(upload_to=user_directory_path, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True, blank=True, null=True)
     updated_at = models.DateTimeField(auto_now=True, blank=True, null=True)
 
@@ -86,9 +85,13 @@ class Sermon(models.Model):
 class Annoucement(models.Model):
     title = models.CharField(max_length=250, default="n/a")
     description = models.TextField(blank=True, null=True)
-    date = models.DateField(blank=True, null=True)
-    time = models.TimeField(blank=True, null=True)
-    location = models.PointField(blank=True, null=True)
+    date = models.DateField(auto_now_add=True, blank=True, null=True)
+    time = models.TimeField(auto_now_add=True, blank=True, null=True)
+    location = models.CharField(
+        max_length=250, blank=True, verbose_name=_("Mosque Location")
+    )
+    lat = models.FloatField(verbose_name=_("Latitude"))
+    lat = models.FloatField(verbose_name=_("Longitude"))
 
     def user_directory_path(instance, filename):
         # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>

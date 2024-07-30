@@ -19,7 +19,7 @@ class User(AbstractUser):
     name = models.CharField(verbose_name=_("Name"), max_length=250, default="n/a")
     email = models.EmailField(verbose_name=_("Email Address"), unique=True)
     phone_number = PhoneNumberField(
-        verbose_name=_("Phone Number"), max_length=30, blank=True, null=True
+        verbose_name=_("Phone Number"), max_length=30, blank=True, null=True, unique=True,
     )
     roles = models.CharField(
         max_length=10, choices=Roles.choices, default=Roles.USER, verbose_name=_("User Roles")
@@ -28,7 +28,7 @@ class User(AbstractUser):
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = [
-        "name",
+        "fullname",
         "phone_number",
     ]
 

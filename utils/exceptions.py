@@ -7,3 +7,7 @@ def validate_phonenumber(self, value):
   phone_number = to_python(value)
   if phone_number and (len(phone_number.national_number) != 10):
     raise serializers.ValidationError("Phone number must be 10 digits")
+  elif phone_number == None:
+    raise serializers.ValidationError("Phone number is required")
+  else:
+    return value

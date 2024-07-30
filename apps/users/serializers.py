@@ -54,7 +54,7 @@ class UserSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         representation = super(UserSerializer, self).to_representation(instance)
         if instance.is_superuser:
-            representation["admin"] = True
+            representation["superuser"] = True
         return representation
 
     def create(self, validated_data):
