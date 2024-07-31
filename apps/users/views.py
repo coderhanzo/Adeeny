@@ -106,6 +106,12 @@ class GetUsers(generics.ListAPIView):
             return User.objects.filter(role=User.Roles.USER)
         else:
             return User.objects.all(raise_exception=True)
+        
+    # def create(self, request):
+    #     if request.user.role != User.Roles.IMAM:
+    #         return Response({"detail": "Only imams can create associates"}, status=status.HTTP_403_FORBIDDEN)
+    #     request.data["roles"] = User.Roles.ASSOCIATE
+    #     return super().create(request)
 
 
 # def generate_unique_slug(model_class, title):
@@ -121,12 +127,7 @@ class GetUsers(generics.ListAPIView):
 #         num += 1
 #     return unique_slug
 
-    def create(self, request):
-        if request.user.role != User.Roles.IMAM:
-            return Response({"detail": "Only imams can create associates"}, status=status.HTTP_403_FORBIDDEN)
-        request.data["roles"] = User.Roles.ASSOCIATE
-        return super().create(request)
-
+   
 
 @api_view(["POST"])
 @permission_classes([AllowAny])
@@ -196,7 +197,7 @@ def logout(request):
 # Creating superadmin
 class CreateSuperAdmin(generics.CreateAPIView):
     serializer_class = CreateUserSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = ([IsAuthenticated, IsSuperAdmin])
     authentication_classes = [JWTAuthentication]
 
     def create(self, request):

@@ -11,6 +11,7 @@ from django.core.exceptions import ValidationError
 
 class User(AbstractUser):
     class Roles(models.TextChoices):
+        ADMIN = 'ADMIN', _('Admin')
         IMAM = 'IMAM', _('Imam')
         ASSCOCIATE = 'ASSOCIATE', _('Associate')
         USER = 'USER', _('User')

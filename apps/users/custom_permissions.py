@@ -1,8 +1,8 @@
 # Extending default Permissions
-from rest_framework import Permissions
+from rest_framework import permissions
 
 
-class IsAdminUser(Permissions.BasePermission):
+class IsAdminUser(permissions.BasePermission):
     def has_permission(self, request, view):
         user = request.user
         if not user:
@@ -10,7 +10,7 @@ class IsAdminUser(Permissions.BasePermission):
         return getattr(user, "is_superadmin", False) or getattr(user, "is_imam", False)
 
 
-class IsSuperAdmin(Permissions.BasePermission):
+class IsSuperAdmin(permissions.BasePermission):
     def has_permission(self, request, view):
         user = request.user
         if not user:
@@ -18,7 +18,7 @@ class IsSuperAdmin(Permissions.BasePermission):
         return getattr(user, "is_superadmin", False)
 
 
-class IsImam(Permissions.BasePermission):
+class IsImam(permissions.BasePermission):
     def has_permission(self, request, view):
         user = request.user
         if not user:
@@ -26,7 +26,7 @@ class IsImam(Permissions.BasePermission):
         return getattr(user, "is_imam", False)
 
 
-class IsAssociate(Permissions.BasePermission):
+class IsAssociate(permissions.BasePermission):
     def has_permission(self, request, view):
         user = request.user
         if not user:

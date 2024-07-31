@@ -21,10 +21,10 @@ class Mosque(models.Model):
         verbose_name=_("Imam's Name"), max_length=250
     )  # make the name of the imam a foreign key with the imam user/profile
     location = models.CharField(
-        max_length=250, blank=True, verbose_name=_("Mosque Location")
+        max_length=250, blank=True, null=True, verbose_name=_("Mosque Location")
     )
-    lat = models.FloatField(verbose_name=_("Latitude"))
-    lat = models.FloatField(verbose_name=_("Longitude"))
+    lat = models.FloatField(verbose_name=_("Latitude"), blank=True, null=True)
+    long = models.FloatField(verbose_name=_("Longitude"), blank=True, null=True)
 
     def user_directory_path(instance, filename):
         # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
@@ -41,6 +41,7 @@ class Mosque(models.Model):
     additional_info = models.TextField(
         verbose_name=_("Additional Content"), blank=True, null=True
     )
+    is_liked = models.BooleanField(default=False)
 
     def __str__(self):
         return self.name if self.name else ""
@@ -88,10 +89,10 @@ class Annoucement(models.Model):
     date = models.DateField(auto_now_add=True, blank=True, null=True)
     time = models.TimeField(auto_now_add=True, blank=True, null=True)
     location = models.CharField(
-        max_length=250, blank=True, verbose_name=_("Mosque Location")
+        max_length=250, blank=True, null=True, verbose_name=_("Mosque Location")
     )
-    lat = models.FloatField(verbose_name=_("Latitude"))
-    lat = models.FloatField(verbose_name=_("Longitude"))
+    lat = models.FloatField(verbose_name=_("Latitude"), blank=True, null=True)
+    long = models.FloatField(verbose_name=_("Longitude"), blank=True, null=True)
 
     def user_directory_path(instance, filename):
         # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
