@@ -5,17 +5,20 @@ from utils.exceptions import validate_phonenumber
 from utils.utils import Base64FileField
 
 
-class CreateProjectDonationSerializer(serializers.ModelSerializer):
-    image = Base64FileField(required=False)
-
+class MonetaryDoantionsSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProjectDonation
-        fields = "__all__"
+        fields = ["donations", "phone_numnber", "amount", "payment_type", "donors_name"]
 
 
-class DonationSerializer(serializers.ModelSerializer):
-    phone_number = PhoneNumberField(region="GH", validators=[validate_phonenumber])
-
+class WaqfDonationsSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProjectDonation
-        fields = "__all__"
+        fields = [
+            "title",
+            "description",
+            "upload_image",
+            "target_amount",
+            "imams_name",
+            "payment_type",
+        ]

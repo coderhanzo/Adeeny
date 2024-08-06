@@ -37,7 +37,6 @@ from django.utils.text import slugify
 User = get_user_model()
 
 
-# NEEDS TESTING
 # Gets new access token else should return 401
 # to get a new refresh token, login
 @api_view(["GET"])
