@@ -15,7 +15,7 @@ from rest_framework_simplejwt.authentication import (
     JWTStatelessUserAuthentication,
 )
 from .models import ProjectDonation
-from .serializers import MonetaryDoantionsSerializer
+from .serializers import MonetaryDoantionsSerializer, WaqfDonationsSerializer
 
 # Create your views here.
 
@@ -23,15 +23,14 @@ from .serializers import MonetaryDoantionsSerializer
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
 @authentication_classes([JWTAuthentication])
-def create_project_donation(request):
+def create_donation(request):
     serializer = MonetaryDoantionsSerializer(data=request.data)
     if serializer.is_valid():
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
-class GetAllProjectDonation(APIView):
+class GetAllDonations(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
@@ -45,3 +44,28 @@ def get_project_donation_by_date(request, date):
     donations = ProjectDonation.objects.filter(date=date)
     serializer = MonetaryDoantionsSerializer(donations, many=True)
     return Response(serializer.data)
+
+# WAQF DONATIONS
+class GetAllWaqfDonations(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        alldonations = ProjectDonation.objects.all()
+        serializer = WaqfDonationsSerializer(alldonations, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+# create waqf donations
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+@authentication_classes([JWTAuthentication])
+def create_waqf_donation(request):
+    serializer = WaqfDonationsSerializer(data=request.data)
+    roles = request.user.roles
+    if roles == "ADMIN" or  "IMAM" or "ASSOCIATE":
+        serializer = WaqfDonationsSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    

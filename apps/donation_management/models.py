@@ -18,6 +18,10 @@ class ProjectDonation(models.Model):
     """
     payment type will be a dropdown menu
     """
+    class PaymentType(models.TextChoices):
+        CASH = "CASH", _("Cash")
+        CREDIT_CARD = "CREDIT_CARD", _("Credit Card")
+        DEBIT_CARD = "DEBIT_CARD", _("Debit Card")
     title = models.CharField(
         verbose_name=_("WAQF Title"), max_length=50, blank=True, null=True
     )
@@ -33,7 +37,7 @@ class ProjectDonation(models.Model):
 
     upload_image = models.FileField(verbose_name=_("Upload Image"), upload_to=user_directory_path, blank=True, null=True)
     imams_name = models.CharField(verbose_name=_("Imam's Name"), max_length=250, blank=True, null=True) # make the name of the imam a foreign key with the imam user/profile
-    payment_type = models.CharField(verbose_name=_("Payment Type"), max_length=250, blank=True, null=True) 
+    payment_type = models.CharField(choices=PaymentType.choices, verbose_name=_("Payment Type"), max_length=250, blank=True, null=True) 
     amount = models.PositiveIntegerField(verbose_name=_("Amount"), blank=True, null=True) # this will be the for donations data
     target_amount = models.PositiveIntegerField(verbose_name=_("Target Amount"), blank=True, null=True) # this will be the waqf data
     created_at = models.DateTimeField(auto_now_add=True)
