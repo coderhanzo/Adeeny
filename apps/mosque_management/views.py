@@ -19,7 +19,7 @@ from rest_framework.permissions import IsAuthenticated
 
 
 @api_view(["POST"])
-@permission_classes([permissions.IsAdminUser])
+# @permission_classes([permissions.IsAdminUser])
 @authentication_classes([JWTAuthentication])
 def create_mosque(request):
     if Mosque.objects.filter(name=request.data["name"]):
