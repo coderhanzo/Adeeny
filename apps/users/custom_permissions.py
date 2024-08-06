@@ -7,7 +7,7 @@ class IsAdminUser(permissions.BasePermission):
         user = request.user
         if not user:
             return False
-        return getattr(user, "is_superadmin", False) or getattr(user, "is_imam", False)
+        return getattr(user, "is_admin", False) or getattr(user, "is_imam", False)
 
 
 class IsSuperAdmin(permissions.BasePermission):

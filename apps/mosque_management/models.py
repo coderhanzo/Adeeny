@@ -6,7 +6,7 @@ from phonenumber_field.modelfields import PhoneNumberField
 
 # Create your models here.
 class Mosque(models.Model):
-    name = models.CharField(verbose_name=_("Mosque Name"), max_length=250)
+    name = models.CharField(verbose_name=_("Mosque Name"), max_length=250, unique=True)
     tel = PhoneNumberField(
         verbose_name=_("Phone Number"),
         blank=True,
@@ -83,7 +83,7 @@ class Sermon(models.Model):
         return f"{self.title} - {self.speaker_name}"
 
 
-class Annoucement(models.Model):
+class Announcement(models.Model):
     title = models.CharField(max_length=250, default="n/a")
     description = models.TextField(blank=True, null=True)
     date = models.DateField(auto_now_add=True, blank=True, null=True)

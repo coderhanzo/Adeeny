@@ -36,6 +36,7 @@ from django.utils.text import slugify
 
 User = get_user_model()
 
+
 # NEEDS TESTING
 # Gets new access token else should return 401
 # to get a new refresh token, login
@@ -90,29 +91,13 @@ def login_view(request):
     )
 
 
-class GetUsers(generics.ListAPIView):
-    serializer_class = UserSerializer
-    permission_classes = ([IsAuthenticated,IsAdminUser])
-    authentication_classes = [JWTAuthentication]
-    # get all users with imam role
-
-    def get_queryset(self):
-        role = self.request.queryset_params.get("role", None)
-        if role == "IMAM":
-            return User.objects.filter(role=User.Roles.IMAM)
-        elif role == "Associate":
-            return User.objects.filter(role=User.Roles.ASSOCIATE)
-        elif role == "USER":
-            return User.objects.filter(role=User.Roles.USER)
-        else:
-            return User.objects.all(raise_exception=True)
-        
-    # def create(self, request):
-    #     if request.user.role != User.Roles.IMAM:
-    #         return Response({"detail": "Only imams can create associates"}, status=status.HTTP_403_FORBIDDEN)
-    #     request.data["roles"] = User.Roles.ASSOCIATE
-    #     return super().create(request)
-
+@api_view(["GET"])
+@permission_classes([AllowAny])
+@authentication_classes([JWTAuthentication])
+def get_all_users(request):
+    serializer = UserSerializer(data=User.objects.all(), many=True)
+    serializer.is_valid()
+    return Response({"users": serializer.data}, status=status.HTTP_200_OK)
 
 # def generate_unique_slug(model_class, title):
 #     """
@@ -127,7 +112,6 @@ class GetUsers(generics.ListAPIView):
 #         num += 1
 #     return unique_slug
 
-   
 
 @api_view(["POST"])
 @permission_classes([AllowAny])
@@ -194,21 +178,6 @@ def logout(request):
     return drf_response
 
 
-# Creating superadmin
-class CreateSuperAdmin(generics.CreateAPIView):
-    serializer_class = CreateUserSerializer
-    permission_classes = ([IsAuthenticated, IsSuperAdmin])
-    authentication_classes = [JWTAuthentication]
-
-    def create(self, request):
-        if request.user.is_superuser:
-            return Response({"detail": "Only superusers can create superadmins"}, status=status.HTTP_403_FORBIDDEN)
-        
-        request.data["is_superuser"] = True
-        request.data["is_staff"] = True
-        return super().create(request)
-
-
 class SetPassword(APIView):
     def post(self, request):
         data = self.request.data
@@ -260,7 +229,3 @@ def custom_password_reset_view(request):
     )
 
     return Response({"message": "Password reset link sent."}, status=status.HTTP_200_OK)
-
-def provide_data_based_on_role(user):
-    if user.roles == User.Roles.IMAM:
-        pass

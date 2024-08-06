@@ -13,26 +13,27 @@ from rest_framework_simplejwt.authentication import (
     JWTAuthentication,
     JWTStatelessUserAuthentication,
 )
-from .models import Mosque, Sermon, Annoucement
-from .serializers import MosqueSerializer, SermonSerializer, AnnoucementSerializer
+from .models import Mosque, Sermon, Announcement
+from .serializers import MosqueSerializer, SermonSerializer, AnnouncementSerializer
+from rest_framework.permissions import IsAuthenticated
 
 
 @api_view(["POST"])
 @permission_classes([permissions.IsAdminUser])
+@authentication_classes([JWTAuthentication])
 def create_mosque(request):
-    # check if the name field is already in the database and raise an error
     if Mosque.objects.filter(name=request.data["name"]):
         return Response(
             {"status": "Mosque with this name already exists"},
             status=status.HTTP_400_BAD_REQUEST,
         )
-    # create the new mosque
     serializer = MosqueSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
     serializer.save()
     return Response(
         {"status": "Mosque Created successfully"}, status=status.HTTP_201_CREATED
     )
+
 
 class GetAllMosques(APIView):
     permission_classes = [permissions.IsAuthenticated]
@@ -63,9 +64,53 @@ class GetAndUpdateMosque(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-# this returns all mosque with the is_liked field set to true
+# returns all mosque with the is_liked field set to true
 @api_view(["GET"])
 def get_liked_mosques(request):
     mosque = Mosque.objects.filter(is_liked=True)
     serialize = MosqueSerializer(mosque, many=True)
-    return Response(serialize.data)
+    return Response(serialize.data, status=status.HTTP_200_OK)
+
+
+# creating an annoucement and checks if the title already exists
+@api_view(["POST"])
+def create_announcement(request):
+
+    if Announcement.objects.filter(title=request.data["title"]).exists():
+        return Response(
+            {"status": "Announcement with this title already exists"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    serializer = AnnouncementSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+    serializer.save()
+    return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+# returns all annoucements
+@api_view(["GET"])
+def get_all_announcements(request):
+    announcements = Announcement.objects.all()
+    serialize = AnnouncementSerializer(announcements, many=True)
+    return Response(serialize.data, status=status.HTTP_200_OK)
+
+
+# deleting annoucement
+@api_view(["DELETE"])
+def delete_announcement(request, pk):
+    announcement = Announcement.objects.get(pk=pk)
+    announcement.delete()
+    return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+# creating sermons
+@api_view(["POST"])
+def upload_sermon(request):
+    serializer = SermonSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+    serializer.save()
+    return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+# 

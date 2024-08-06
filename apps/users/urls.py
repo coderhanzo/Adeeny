@@ -10,8 +10,8 @@ urlpatterns = [
     path("users/me/", views.get_logged_in_user, name="get_logged_in"),
     path("users/logout/", views.logout, name="logout"),
     path("users/set_password/", views.SetPassword.as_view(), name="set_password"),
-    path("users/all/", views.GetUsers.as_view()),
+    path("users/all/", views.get_all_users, name="get_all_users"),
     path("password-reset/", views.custom_password_reset_view),
     path("password-reset-confirm/", views.custom_password_reset_view),
-    path("create-admin/", views.CreateSuperAdmin.as_view(), name="create_superadmin"),
+    # path("users/filter/", views.GetUsersPerRole.as_view(), name="create_superadmin"),
 ]

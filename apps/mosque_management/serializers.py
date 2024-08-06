@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Mosque, Sermon, Annoucement
+from .models import Mosque, Sermon, Announcement
 
 
 class MosqueSerializer(serializers.ModelSerializer):
@@ -13,7 +13,7 @@ class SermonSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class AnnoucementSerializer(serializers.ModelSerializer):
+class AnnouncementSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Annoucement
+        model = Announcement
         fields = "__all__"

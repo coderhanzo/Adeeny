@@ -25,11 +25,12 @@ class User(AbstractUser):
     roles = models.CharField(
         max_length=10, choices=Roles.choices, default=Roles.USER, verbose_name=_("User Roles")
     )
-    
+    is_verified = models.BooleanField(default=False)
+    verification_code = models.CharField(max_length=6, blank=True, null=True)
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = [
-        "fullname",
+        "name",
         "phone_number",
     ]
 
