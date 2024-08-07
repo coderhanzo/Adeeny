@@ -99,8 +99,8 @@ class Announcement(models.Model):
         return "{0}/{1}".format("annoucement image", filename)
 
     image = models.FileField(upload_to="user_directory_path", blank=True, null=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(auto_now_add=True, blank=True, null=True)
+    updated_at = models.DateTimeField(auto_now=True, blank=True, null=True)
 
     def __str__(self):
         return self.title
