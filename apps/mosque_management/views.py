@@ -16,10 +16,11 @@ from rest_framework_simplejwt.authentication import (
 from .models import Mosque, Sermon, Announcement
 from .serializers import MosqueSerializer, SermonSerializer, AnnouncementSerializer
 from rest_framework.permissions import IsAuthenticated
+from apps.users.custom_permissions import IsAdmin, IsSuperAdmin, IsImam
 
 
 @api_view(["POST"])
-# @permission_classes([permissions.IsAdminUser])
+@permission_classes([IsAdmin])
 @authentication_classes([JWTAuthentication])
 def create_mosque(request):
     if Mosque.objects.filter(name=request.data["name"]):

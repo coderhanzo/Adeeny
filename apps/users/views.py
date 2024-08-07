@@ -30,7 +30,7 @@ from django.contrib.auth import (
     logout,
 )
 from django.template.loader import render_to_string
-from .custom_permissions import IsAdminUser, IsImam, IsAssociate, IsSuperAdmin
+from .custom_permissions import IsAdmin, IsImam, IsAssociate, IsSuperAdmin
 from django.contrib.auth.models import Permission
 from django.utils.text import slugify
 
