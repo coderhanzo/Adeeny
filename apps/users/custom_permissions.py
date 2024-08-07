@@ -9,7 +9,7 @@ class IsAdmin(permissions.BasePermission):
 
 class IsSuperAdmin(permissions.BasePermission):
     def has_permission(self, request, view):
-        return request.user.roles == User.Roles.SUPERADMIN
+        return request.user.roles == User.Roles.ADMIN
 
 
 class IsImam(permissions.BasePermission):

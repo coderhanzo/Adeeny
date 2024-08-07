@@ -16,7 +16,7 @@ from rest_framework_simplejwt.authentication import (
 from .models import Mosque, Sermon, Announcement
 from .serializers import MosqueSerializer, SermonSerializer, AnnouncementSerializer
 from rest_framework.permissions import IsAuthenticated
-from apps.users.custom_permissions import IsAdmin, IsSuperAdmin, IsImam
+from apps.users.custom_permissions import IsAdmin, IsAssociate, IsImam, IsSuperAdmin
 
 
 @api_view(["POST"])
@@ -114,4 +114,4 @@ def upload_sermon(request):
     return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
-# 
+#
