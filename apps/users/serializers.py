@@ -32,6 +32,7 @@ class CreateUserSerializer(UserCreateSerializer):
             user.save()
         return user
 
+
 class UserSerializer(serializers.ModelSerializer):
     full_name = serializers.SerializerMethodField(source="get_full_name")
     phone_number = PhoneNumberField()
@@ -46,6 +47,7 @@ class UserSerializer(serializers.ModelSerializer):
             "full_name",
             "phone_number",
             "roles",
+            "is_verified",
         ]
 
     def get_full_name(self, obj):

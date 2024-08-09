@@ -11,22 +11,29 @@ from django.core.exceptions import ValidationError
 
 class User(AbstractUser):
     class Roles(models.TextChoices):
-        ADMIN = 'ADMIN', _('Admin')
-        IMAM = 'IMAM', _('Imam')
-        ASSCOCIATE = 'ASSOCIATE', _('Associate')
-        USER = 'USER', _('User')
+        ADMIN = "ADMIN", _("Admin")
+        IMAM = "IMAM", _("Imam")
+        ASSCOCIATE = "ASSOCIATE", _("Associate")
+        USER = "USER", _("User")
 
     username = None
     name = models.CharField(verbose_name=_("Name"), max_length=250, default="n/a")
     email = models.EmailField(verbose_name=_("Email Address"), unique=True)
     phone_number = PhoneNumberField(
-        verbose_name=_("Phone Number"), max_length=30, blank=True, null=True, unique=True,
+        verbose_name=_("Phone Number"),
+        max_length=30,
+        blank=True,
+        null=True,
+        unique=True,
     )
     roles = models.CharField(
-        max_length=10, choices=Roles.choices, default=Roles.USER, verbose_name=_("User Roles")
+        max_length=10,
+        choices=Roles.choices,
+        default=Roles.USER,
+        verbose_name=_("User Roles"),
     )
-    is_verified = models.BooleanField(default=False)
-    verification_code = models.CharField(max_length=6, blank=True, null=True)
+    is_verified = models.BooleanField(_("Is Verified"), default=True)
+    # verification_code = models.CharField(max_length=6, blank=True, null=True)
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = [
@@ -42,7 +49,6 @@ class User(AbstractUser):
 
     def __str__(self):
         return str(self.email) if self.email else ""
-
 
     @property
     def get_full_name(self):

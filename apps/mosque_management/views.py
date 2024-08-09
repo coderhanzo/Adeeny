@@ -50,9 +50,9 @@ class GetAndUpdateMosque(APIView):
     permission_classes = [permissions.IsAuthenticated]
     authentication_classes = [JWTAuthentication]
 
-    def get_object(self, pk):
+    def get_object(self):
         try:
-            return Mosque.objects.get(pk=pk)
+            return Mosque.objects.get(id=id)
         except Mosque.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
@@ -100,7 +100,7 @@ def get_all_announcements(request):
 # deleting annoucement
 @api_view(["DELETE"])
 def delete_announcement(request, pk):
-    announcement = Announcement.objects.get(pk=pk)
+    announcement = Announcement.objects.get(id=id)
     announcement.delete()
     return Response(status=status.HTTP_204_NO_CONTENT)
 

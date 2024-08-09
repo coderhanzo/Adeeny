@@ -64,6 +64,7 @@ def login_view(request):
     """Login view for local authentication"""
     email = request.data.get("email")
     password = request.data.get("password")
+    is_verified = request.data.get("is_verified")
 
     user = authenticate(
         request,
@@ -72,22 +73,39 @@ def login_view(request):
     )
 
     if user and user.is_active:
-        # If valid, issue JWT token
-        token = RefreshToken().for_user(user)
-        drf_response = Response(
-            {
-                "access": str(token.access_token),
-            }
+        if is_verified:
+            user.is_verified = True
+            user.save()
+
+        if user.is_verified:
+            token = RefreshToken().for_user(user)
+            drf_response = Response(
+                {
+                    "access": str(token.access_token),
+                }
+            )
+            drf_response.set_cookie(
+                key=settings.SIMPLE_JWT["AUTH_COOKIE"],
+                value=str(token),
+                httponly=True,
+            )
+
+            return drf_response
+        else:
+            return Response(
+                {"detail": "Account not verified"}, status=status.HTTP_401_UNAUTHORIZED
+            )
+
+    else:
+        return Response(
+            {"detail": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED
         )
-        drf_response.set_cookie(
-            key=settings.SIMPLE_JWT["AUTH_COOKIE"],
-            value=str(token),
-            httponly=True,
-        )
-        return drf_response
-    return Response(
-        {"detail": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED
-    )
+
+
+# update user instance when user is_verified is true
+@api_view(["PUT"])
+def update_user(request):
+    user = request.user
 
 
 @api_view(["GET"])
@@ -97,6 +115,7 @@ def get_all_users(request):
     serializer = UserSerializer(data=User.objects.all(), many=True)
     serializer.is_valid()
     return Response({"users": serializer.data}, status=status.HTTP_200_OK)
+
 
 # def generate_unique_slug(model_class, title):
 #     """
@@ -123,6 +142,7 @@ def signup_view(request):
         "email": request.data.get("email"),
         "password": request.data.get("password"),
         "phone_number": request.data.get("phone_number"),
+        "is_verified": request.data.get("is_verified", False),
         "roles": request.data.get("roles", User.Roles.USER),
         # Add other fields as needed
     }
