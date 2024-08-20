@@ -17,7 +17,7 @@ echo "Applying general database migrations"
 python manage.py migrate --noinput
 
 # Collect static files
-# python3 manage.py collectstatic --noinput
+python3 manage.py collectstatic --noinput
 
 # Start Gunicorn
 gunicorn --workers 3 --bind 0.0.0.0:8000 config.wsgi:application

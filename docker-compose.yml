@@ -23,8 +23,8 @@ services:
     build:
       context: .
       dockerfile: ./docker/Dockerfile
-    command: gunicorn --workers 3 --bind 0.0.0.0:8000 config.wsgi:application
-    # command: python manage.py runserver 0.0.0.0:8000
+    # command: ["./build_script.sh"]
+    command: python manage.py runserver 0.0.0.0:8000
     volumes:
       - .:/app
       - static_volume:/app/staticfiles
