@@ -34,7 +34,6 @@ RUN poetry config virtualenvs.create false && poetry install && rm -rf $POETRY_C
 # COPY ./docker/entry /entry
 # RUN sed -i 's/\r$//g' /entry
 # RUN chmod +x /entry
-RUN python3 manage.py migrate
 # COPY ./docker/build /build
 # RUN sed -i 's/\r$//g' /build
 # RUN chmod +x /build

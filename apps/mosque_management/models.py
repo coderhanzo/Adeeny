@@ -44,7 +44,7 @@ class Mosque(models.Model):
     is_liked = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.name if self.name else ""
+        return self.name
 
 
 class PrayerTime(models.Model):

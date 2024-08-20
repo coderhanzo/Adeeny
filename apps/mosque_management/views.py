@@ -23,46 +23,36 @@ from apps.users.custom_permissions import IsAdmin, IsAssociate, IsImam, IsSuperA
 @permission_classes([IsAdmin])
 @authentication_classes([JWTAuthentication])
 def create_mosque(request):
-    if Mosque.objects.filter(name=request.data["name"]):
+    serializer = MosqueSerializer(data=request.data)
+    if Mosque.objects.filter(name=request.data["name"]).exists():
         return Response(
-            {"status": "Mosque with this name already exists"},
+            {"error": "Mosque with this name already exists"},
             status=status.HTTP_400_BAD_REQUEST,
         )
-    serializer = MosqueSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
     serializer.save()
-    return Response(
-        {"status": "Mosque Created successfully"}, status=status.HTTP_201_CREATED
-    )
+    return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
-class GetAllMosques(APIView):
-    permission_classes = [permissions.IsAuthenticated]
-    authentication_classes = [JWTAuthentication]
+# endpoint to delete mosque
+@api_view(["DELETE"])
+@permission_classes([IsAdmin])
+@authentication_classes([JWTAuthentication])
+def delete_mosque(request, id):
+    mosque = MosqueSerializer.objects.get(id=id)
+    mosque.delete()
+    return Response(status=status.HTTP_204_NO_CONTENT)
 
-    def get(self, request):
+
+@api_view(["GET"])
+def get_all_mosques(request):
+    is_liked = request.query_params.get("is_liked", None)
+    if is_liked is not None:
+        mosques = Mosque.objects.filter(is_liked=True if is_liked == "true" else False)
+    else:
         mosques = Mosque.objects.all()
-        serializer = MosqueSerializer(mosques, many=True)
-        return Response(serializer.data)
-
-
-class GetAndUpdateMosque(APIView):
-    permission_classes = [permissions.IsAuthenticated]
-    authentication_classes = [JWTAuthentication]
-
-    def get_object(self):
-        try:
-            return Mosque.objects.get(id=id)
-        except Mosque.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-
-    def patch(self, request, pk):
-        mosque = self.get_object(pk)
-        serializer = MosqueSerializer(mosque, data=request.data, partial=True)
-        if serializer.is_valid(raise_exception=True):
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    serializer = MosqueSerializer(mosques, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 # returns all mosque with the is_liked field set to true
@@ -89,6 +79,7 @@ def create_announcement(request):
     return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
+
 # returns all annoucements
 @api_view(["GET"])
 def get_all_announcements(request):
@@ -99,7 +90,7 @@ def get_all_announcements(request):
 
 # deleting annoucement
 @api_view(["DELETE"])
-def delete_announcement(request, pk):
+def delete_announcement(request, id):
     announcement = Announcement.objects.get(id=id)
     announcement.delete()
     return Response(status=status.HTTP_204_NO_CONTENT)
