@@ -28,7 +28,7 @@ class Mosque(models.Model):
 
     def user_directory_path(instance, filename):
         # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
-        return "{0}/{1}".format("mosque files", filename)
+        return "{0}/{1}".format("mosque_files", filename)
 
     image = models.ImageField(
         upload_to=user_directory_path,

@@ -16,6 +16,7 @@ class UserAdmin(BaseUserAdmin):
     model = User
     list_display = [
         "id",
+        "profile_pic",
         "email",
         "first_name",
         "last_name",
@@ -28,6 +29,7 @@ class UserAdmin(BaseUserAdmin):
         "first_name",
         "last_name",
         "phone_number",
+        "email",
         "is_staff",
         "is_active",
     ]
@@ -84,7 +86,7 @@ class UserAdmin(BaseUserAdmin):
             },
         ),
     )
-    search_fields = ["email", "first_name", "last_name", "phone_number", "roles"]
+    search_fields = ["email", "first_name", "last_name", "phone_number", "roles", "email"]
 
 
 admin.site.register(User, UserAdmin)
