@@ -10,14 +10,17 @@ from django.core.exceptions import ValidationError
 
 
 class User(AbstractUser):
-    class Roles(models.TextChoices):
-        ADMIN = "ADMIN", _("Admin")
-        IMAM = "IMAM", _("Imam")
-        ASSCOCIATE = "ASSOCIATE", _("Associate")
-        USER = "USER", _("User")
+    USER_ROLES = [
+        ("ADMIN", "Admin"),
+        ("IMAM", "Imam"),
+        ("ASSOCIATE", "Associate"),
+        ("USER", "User"),
+    ]
 
     username = None
-    name = models.CharField(verbose_name=_("Name"), max_length=250, default="n/a")
+    # is_staff = None
+    first_name = models.CharField(verbose_name=_("First Name"), max_length=250, default="n/a")
+    last_name = models.CharField(verbose_name=_("Last Name"), max_length=250, default="n/a")
     email = models.EmailField(verbose_name=_("Email Address"), unique=True)
     phone_number = PhoneNumberField(
         verbose_name=_("Phone Number"),
@@ -28,8 +31,8 @@ class User(AbstractUser):
     )
     roles = models.CharField(
         max_length=10,
-        choices=Roles.choices,
-        default=Roles.USER,
+        choices=USER_ROLES,
+        default="USER",
         verbose_name=_("User Roles"),
     )
     is_verified = models.BooleanField(_("Is Verified"), default=True)
@@ -37,7 +40,8 @@ class User(AbstractUser):
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = [
-        "name",
+        "first_name",
+        "last_name",
         "phone_number",
     ]
 

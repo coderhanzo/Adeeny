@@ -9,10 +9,10 @@ from rest_framework import status
 from django.db import transaction
 from rest_framework.views import APIView
 from rest_framework import authentication, permissions
-from rest_framework_simplejwt.authentication import (
-    JWTAuthentication,
-    JWTStatelessUserAuthentication,
-)
+# from rest_framework_simplejwt.authentication import (
+#     JWTAuthentication,
+#     JWTStatelessUserAuthentication,
+# )
 from .models import Mosque, Sermon, Announcement
 from .serializers import MosqueSerializer, SermonSerializer, AnnouncementSerializer
 from rest_framework.permissions import IsAuthenticated
@@ -20,8 +20,8 @@ from apps.users.custom_permissions import IsAdmin, IsAssociate, IsImam, IsSuperA
 
 
 @api_view(["POST"])
-@permission_classes([IsAdmin])
-@authentication_classes([JWTAuthentication])
+# @permission_classes([IsAdmin])
+# @authentication_classes([JWTAuthentication])
 def create_mosque(request):
     serializer = MosqueSerializer(data=request.data)
     if Mosque.objects.filter(name=request.data["name"]).exists():
@@ -37,7 +37,7 @@ def create_mosque(request):
 # endpoint to delete mosque
 @api_view(["DELETE"])
 @permission_classes([IsAdmin])
-@authentication_classes([JWTAuthentication])
+# @authentication_classes([JWTAuthentication])
 def delete_mosque(request, id):
     mosque = MosqueSerializer.objects.get(id=id)
     mosque.delete()

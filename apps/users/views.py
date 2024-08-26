@@ -17,9 +17,9 @@ from rest_framework.decorators import (
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework import status, generics, permissions
 import requests
-from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework_simplejwt.exceptions import TokenError
-from rest_framework_simplejwt.authentication import JWTAuthentication
+# from rest_framework_simplejwt.tokens import RefreshToken
+# from rest_framework_simplejwt.exceptions import TokenError
+# from rest_framework_simplejwt.authentication import JWTAuthentication
 from .serializers import UserSerializer, CreateUserSerializer
 from djoser.serializers import SetPasswordRetypeSerializer
 from djoser.compat import get_user_email
@@ -39,150 +39,151 @@ User = get_user_model()
 
 # Gets new access token else should return 401
 # to get a new refresh token, login
-@api_view(["GET"])
-@permission_classes([AllowAny])
-def refresh_token_view(request):
-    # Access the refresh_token from the cookies sent with the request
-    refresh_token = request.COOKIES.get("refresh_token")
-    # if not refresh_token:
-    #     return Response({"error": "Refresh token not found."}, status=400)
+# @api_view(["GET"])
+# @permission_classes([AllowAny])
+# def refresh_token_view(request):
+#     # Access the refresh_token from the cookies sent with the request
+#     refresh_token = request.COOKIES.get("refresh_token")
+#     # if not refresh_token:
+#     #     return Response({"error": "Refresh token not found."}, status=400)
 
-    # Prepare data for TokenRefreshView
-    data = {"refresh": refresh_token}
-    # Check simplejwt docs if this doesnt work
-    serializer = TokenRefreshSerializer(data=data)
-    try:
-        serializer.is_valid(raise_exception=True)
-    except TokenError:
-        return Response(status=status.HTTP_401_UNAUTHORIZED)
-    return Response(serializer.validated_data, status=status.HTTP_200_OK)
-
-
-@api_view(["POST"])
-@permission_classes([AllowAny])
-def login_view(request):
-    """Login view for local authentication"""
-    email = request.data.get("email")
-    password = request.data.get("password")
-    is_verified = request.data.get("is_verified")
-
-    user = authenticate(
-        request,
-        email=email,
-        password=password,
-    )
-
-    if user and user.is_active:
-        if is_verified:
-            user.is_verified = True
-            user.save()
-
-        if user.is_verified:
-            token = RefreshToken().for_user(user)
-            drf_response = Response(
-                {
-                    "access": str(token.access_token),
-                }
-            )
-            drf_response.set_cookie(
-                key=settings.SIMPLE_JWT["AUTH_COOKIE"],
-                value=str(token),
-                httponly=True,
-            )
-
-            return drf_response
-        else:
-            return Response(
-                {"detail": "Account not verified"}, status=status.HTTP_401_UNAUTHORIZED
-            )
-
-    else:
-        return Response(
-            {"detail": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED
-        )
+#     # Prepare data for TokenRefreshView
+#     data = {"refresh": refresh_token}
+#     # Check simplejwt docs if this doesnt work
+#     serializer = TokenRefreshSerializer(data=data)
+#     try:
+#         serializer.is_valid(raise_exception=True)
+#     except TokenError:
+#         return Response(status=status.HTTP_401_UNAUTHORIZED)
+#     return Response(serializer.validated_data, status=status.HTTP_200_OK)
 
 
-# update user instance when user is_verified is true
-@api_view(["PUT"])
-def update_user(request):
-    user = request.user
+# @api_view(["POST"])
+# @permission_classes([AllowAny])
+# def login_view(request):
+#     """Login view for local authentication"""
+#     email = request.data.get("email")
+#     password = request.data.get("password")
+#     is_verified = request.data.get("is_verified")
+
+#     user = authenticate(
+#         request,
+#         email=email,
+#         password=password,
+#     )
+
+#     if user and user.is_active:
+#         if is_verified:
+#             user.is_verified = True
+#             user.save()
+
+#         if user.is_verified:
+#             token = RefreshToken().for_user(user)
+#             drf_response = Response(
+#                 {
+#                     "access": str(token.access_token),
+#                 }
+#             )
+#             drf_response.set_cookie(
+#                 key=settings.SIMPLE_JWT["AUTH_COOKIE"],
+#                 value=str(token),
+#                 httponly=True,
+#             )
+
+#             return drf_response
+#         else:
+#             return Response(
+#                 {"detail": "Account not verified"}, status=status.HTTP_401_UNAUTHORIZED
+#             )
+
+#     else:
+#         return Response(
+#             {"detail": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED
+#         )
 
 
-@api_view(["GET"])
-@permission_classes([AllowAny])
-@authentication_classes([JWTAuthentication])
-def get_all_users(request):
-    serializer = UserSerializer(data=User.objects.all(), many=True)
-    serializer.is_valid()
-    return Response({"users": serializer.data}, status=status.HTTP_200_OK)
+# # update user instance when user is_verified is true
+# @api_view(["PUT"])
+# def update_user(request):
+#     user = request.user
 
 
-# def generate_unique_slug(model_class, title):
-#     """
-#     django-scheduler models aren't great but i'd rather not touch them/
-#     This function is here so that the slug field in the Calendar model is unique
-#     """
-#     original_slug = slugify(title)
-#     unique_slug = original_slug
-#     num = 1
-#     while model_class.objects.filter(slug=unique_slug).exists():
-#         unique_slug = "{}-{}".format(original_slug, num)
-#         num += 1
-#     return unique_slug
+# @api_view(["GET"])
+# @permission_classes([AllowAny])
+# # @authentication_classes([JWTAuthentication])
+# def get_all_users(request):
+#     serializer = UserSerializer(data=User.objects.all(), many=True)
+#     serializer.is_valid()
+#     return Response({"users": serializer.data}, status=status.HTTP_200_OK)
 
 
-@api_view(["POST"])
-@permission_classes([AllowAny])
-@transaction.atomic
-def signup_view(request):
-    """Register view for local authentication"""
-    user_data = {
-        "first_name": request.data.get("first_name"),
-        "last_name": request.data.get("last_name"),
-        "email": request.data.get("email"),
-        "password": request.data.get("password"),
-        "phone_number": request.data.get("phone_number"),
-        "is_verified": request.data.get("is_verified", False),
-        "roles": request.data.get("roles", User.Roles.USER),
-        # Add other fields as needed
-    }
+# # def generate_unique_slug(model_class, title):
+# #     """
+# #     django-scheduler models aren't great but i'd rather not touch them/
+# #     This function is here so that the slug field in the Calendar model is unique
+# #     """
+# #     original_slug = slugify(title)
+# #     unique_slug = original_slug
+# #     num = 1
+# #     while model_class.objects.filter(slug=unique_slug).exists():
+# #         unique_slug = "{}-{}".format(original_slug, num)
+# #         num += 1
+# #     return unique_slug
 
-    # if user_data.get("institution_admin"):
-    #     institution_serializer = InstitutionSerializer(
-    #         data={"name": user_data.get("institution_name")}
-    #     )
-    #     institution_serializer.is_valid(raise_exception=True)
-    #     instituation_instance = institution_serializer.save()
 
-    #     user_data["institution"] = instituation_instance.id
+# @api_view(["POST"])
+# @permission_classes([AllowAny])
+# # @authentication_classes([OAuth2Authentication])
+# @transaction.atomic
+# def signup_view(request):
+#     """Register view for local authentication"""
+#     user_data = {
+#         "first_name": request.data.get("first_name"),
+#         "last_name": request.data.get("last_name"),
+#         "email": request.data.get("email"),
+#         "password": request.data.get("password"),
+#         "phone_number": request.data.get("phone_number"),
+#         "is_verified": request.data.get("is_verified", False),
+#         "roles": request.data.get("roles", User.Roles.USER),
+#         # Add other fields as needed
+#     }
 
-    # Post to app db
-    serializer = CreateUserSerializer(data=user_data)
-    serializer.is_valid(raise_exception=True)
-    user = serializer.save()
+#     # if user_data.get("institution_admin"):
+#     #     institution_serializer = InstitutionSerializer(
+#     #         data={"name": user_data.get("institution_name")}
+#     #     )
+#     #     institution_serializer.is_valid(raise_exception=True)
+#     #     instituation_instance = institution_serializer.save()
 
-    if user:
-        # If account creation successful, issue JWT token
-        token = RefreshToken().for_user(user)
-        drf_response = Response(
-            {
-                "access": str(token.access_token),
-            }
-        )
-        drf_response.set_cookie(
-            key=settings.SIMPLE_JWT["AUTH_COOKIE"],
-            value=str(token),
-            httponly=True,
-        )
-        return drf_response
-    return Response(
-        {"detail": "Account creation failed"}, status=status.HTTP_400_BAD_REQUEST
-    )
+#     #     user_data["institution"] = instituation_instance.id
+
+#     # Post to app db
+#     serializer = CreateUserSerializer(data=user_data)
+#     serializer.is_valid(raise_exception=True)
+#     user = serializer.save()
+
+#     if user:
+#         # If account creation successful, issue JWT token
+#         token = RefreshToken().for_user(user)
+#         drf_response = Response(
+#             {
+#                 "access": str(token.access_token),
+#             }
+#         )
+#         drf_response.set_cookie(
+#             key=settings.SIMPLE_JWT["AUTH_COOKIE"],
+#             value=str(token),
+#             httponly=True,
+#         )
+#         return drf_response
+#     return Response(
+#         {"detail": "Account creation failed"}, status=status.HTTP_400_BAD_REQUEST
+#     )
 
 
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
-@authentication_classes([JWTAuthentication])
+# @authentication_classes([JWTAuthentication])
 def get_logged_in_user(request):
     serializer = UserSerializer(instance=request.user)
     return Response(serializer.data, status=status.HTTP_200_OK)
@@ -190,7 +191,7 @@ def get_logged_in_user(request):
 
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
-@authentication_classes([JWTAuthentication])
+# @authentication_classes([JWTAuthentication])
 def logout(request):
     drf_response = Response(status=status.HTTP_200_OK)
     drf_response.delete_cookie(settings.SIMPLE_JWT["AUTH_COOKIE"])

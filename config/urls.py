@@ -14,16 +14,20 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+
 from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from oauth2_provider import urls as oauth2_urls
 
 urlpatterns = [
+    path("oauth/", include('drf_social_oauth2.urls', namespace='drf')),
     path("admin/", admin.site.urls),
     path("api/auth/", include("apps.users.urls")),
     path("api/auth/", include("djoser.urls")),
     path("api/auth/", include("djoser.urls.jwt")),
     path("api/v1/", include("apps.donation_management.urls")),
     path("api/v1/", include("apps.mosque_management.urls")),
+    # path("oauth/", include("oauth2_provider.urls", namespace="oauth2_provider")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

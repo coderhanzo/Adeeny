@@ -2,6 +2,9 @@ from django.contrib.auth import get_user_model
 from rest_framework import serializers, viewsets, status
 from phonenumber_field.serializerfields import PhoneNumberField
 from rest_framework_simplejwt.tokens import RefreshToken
+from django.core.exceptions import ValidationError
+import django.contrib.auth.password_validation as validations
+from django.contrib.auth.hashers import make_password
 from django.conf import settings
 from djoser.serializers import UserCreateSerializer
 
@@ -9,19 +12,38 @@ User = get_user_model()
 
 
 class CreateUserSerializer(UserCreateSerializer):
+    password = serializers.CharField(write_only=True, required=True)
+    password_confirmation = serializers.CharField(write_only=True, required=True)
+
+    def validate(self, data):
+        password = data.pop("password")
+        password_confirmation = data.pop("password_confirmation")
+
+        if password != password_confirmation:
+            raise serializers.ValidationError(
+                {"password_confirmation": "Passwords do not match"}
+            )
+
+        try:
+            validations.validate_password(password=password)
+
+        except ValidationError as err:
+            raise serializers.ValidationError({"password": err.messages})
+
+        data["password"] = make_password(password)
+        return data
 
     class Meta(UserCreateSerializer.Meta):
         model = User
         fields = [
             "id",
-            "email",
             "first_name",
             "last_name",
+            "email",
             "phone_number",
             "password",
+            "password_confirmation",
             "roles",
-            "is_superuser",
-            "is_staff",
         ]
 
     def create(self, validated_data):
@@ -35,32 +57,33 @@ class CreateUserSerializer(UserCreateSerializer):
 
 class UserSerializer(serializers.ModelSerializer):
     full_name = serializers.SerializerMethodField(source="get_full_name")
-    phone_number = PhoneNumberField()
 
     class Meta:
         model = User
         fields = [
             "id",
             "email",
-            "first_name",
-            "last_name",
             "full_name",
             "phone_number",
             "roles",
-            "is_verified",
         ]
 
     def get_full_name(self, obj):
         return obj.get_full_name
 
-    def to_representation(self, instance):
-        representation = super(UserSerializer, self).to_representation(instance)
-        if instance.is_superuser:
-            representation["superuser"] = True
-        return representation
+    # def to_representation(self, instance):
+    #     representation = super(UserSerializer, self).to_representation(instance)
+    #     if instance.is_superuser:
+    #         representation["superuser"] = True
+    #     return representation
 
     def create(self, validated_data):
-        return User.objects.create_user(**validated_data)
+        user = User.objects.create_user(
+            email=validated_data["email"],
+            user_role=validated_data["user_role"],
+            password=validated_data["password"],
+        )
+        return user
 
 
 class TokenRefreshSerializer(serializers.Serializer):

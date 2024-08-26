@@ -32,16 +32,16 @@ COPY pyproject.toml poetry.lock ./
 # Install Poetry environment
 RUN poetry config virtualenvs.create false && poetry install && rm -rf $POETRY_CACHE_DIR
 
-COPY ./docker/entry.sh /entry.sh
-RUN sed -i 's/\r$//g' /entry.sh
-RUN chmod +x /entry.sh
+# COPY ./docker/entry.sh /entry.sh
+# RUN sed -i 's/\r$//g' /entry.sh
+# RUN chmod +x /entry.sh
 
-COPY ./docker/build.sh /build.sh
-RUN sed -i 's/\r$//g' /build.sh
-RUN chmod +x /build.sh
+# COPY ./docker/build.sh /build.sh
+# RUN sed -i 's/\r$//g' /build.sh
+# RUN chmod +x /build.sh
 
 COPY . .
 
-# CMD ["python3", "manage.py", "runserver", "0.0.0.0:8000"]
-CMD ["gunicorn --workers 3 --bind 0.0.0.0:8000 config.wsgi:application"]
+CMD ["python3", "manage.py", "runserver", "0.0.0.0:8000"]
+# CMD ["gunicorn --workers 3 --bind 0.0.0.0:8000 config.wsgi:application"]
 # CMD ["/build"]

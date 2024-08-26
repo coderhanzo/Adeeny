@@ -10,10 +10,10 @@ from rest_framework.decorators import (
     permission_classes,
     authentication_classes,
 )
-from rest_framework_simplejwt.authentication import (
-    JWTAuthentication,
-    JWTStatelessUserAuthentication,
-)
+# from rest_framework_simplejwt.authentication import (
+#     JWTAuthentication,
+#     JWTStatelessUserAuthentication,
+# )
 from .models import ProjectDonation
 from .serializers import MonetaryDoantionsSerializer, WaqfDonationsSerializer
 
@@ -21,8 +21,8 @@ from .serializers import MonetaryDoantionsSerializer, WaqfDonationsSerializer
 
 
 @api_view(["POST"])
-@permission_classes([IsAuthenticated])
-@authentication_classes([JWTAuthentication])
+# @permission_classes([IsAuthenticated])
+# @authentication_classes([JWTAuthentication])
 def create_donation(request):
     serializer = MonetaryDoantionsSerializer(data=request.data)
     if serializer.is_valid():
@@ -31,7 +31,7 @@ def create_donation(request):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class GetAllDonations(APIView):
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
 
     def get(self, request):
         donations = ProjectDonation.objects.all()
@@ -47,7 +47,7 @@ def get_project_donation_by_date(request, date):
 
 # WAQF DONATIONS
 class GetAllWaqfDonations(APIView):
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
 
     def get(self, request):
         alldonations = ProjectDonation.objects.all()
@@ -56,8 +56,8 @@ class GetAllWaqfDonations(APIView):
 
 # create waqf donations
 @api_view(["POST"])
-@permission_classes([IsAuthenticated])
-@authentication_classes([JWTAuthentication])
+# @permission_classes([IsAuthenticated])
+# @authentication_classes([JWTAuthentication])
 def create_waqf_donation(request):
     serializer = WaqfDonationsSerializer(data=request.data)
     roles = request.user.roles

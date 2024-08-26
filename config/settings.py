@@ -38,7 +38,9 @@ THIRD_PARTY_APPS = [
     "rest_framework_gis",
     "corsheaders",
     "whitenoise",
-    
+    "oauth2_provider",
+    "social_django",
+    "drf_social_oauth2",
 ]
 
 LOCAL_APPS = [
@@ -58,6 +60,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
+    "oauth2_provider.middleware.OAuth2TokenMiddleware",
 ]
 
 ROOT_URLCONF = "config.urls"
@@ -73,6 +76,8 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "social_django.context_processors.backends",
+                "social_django.context_processors.login_redirect",
             ],
         },
     },
@@ -121,7 +126,25 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "oauth2_provider.contrib.rest_framework.OAuth2Authentication",
+        "drf_social_oauth2.authentication.SocialAuthentication",
+    ),
+}
 
+OAUTH2_PROVIDER = {
+    "SCOPES": {
+        "read": "Read access",
+        "write": "Write access",
+        "groups": "Access to your groups",
+    }
+}
+
+AUTHENTICATION_BACKENDS = (
+   "drf_social_oauth2.backends.DjangoOAuth2",
+   "django.contrib.auth.backends.ModelBackend",
+)
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
 
@@ -157,25 +180,25 @@ from datetime import timedelta
 DATE_FORMAT = "%Y-%m-%d"
 DATETIME_FORMAT = "%Y-%m-%d %H:%M"
 
-SIMPLE_JWT = {
-    "AUTH_HEADER_TYPES": (
-        "Bearer",
-        "JWT",
-    ),
-    "ACCESS_TOKEN_LIFETIME": timedelta(days=1),
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=2),
-    "ROTATE_REFRESH_TOKENS": False,
-    "SIGNING_KEY": env("SIGNING_KEY"),
-    "AUTH_HEADER_NAME": "HTTP_AUTHORIZATION",
-    "AUTH_TOKEN_CLASSES": ("rest_framework_simplejwt.tokens.AccessToken",),
-    "UPDATE_LAST_LOGIN": True,
-    "AUTH_COOKIE": "refresh_token",  # Cookie name. Enables cookies if value is set.
-    "AUTH_COOKIE_DOMAIN": None,  # A string like "example.com", or None for standard domain cookie.
-    "AUTH_COOKIE_SECURE": False,  # Whether the auth cookies should be secure (https:// only).
-    "AUTH_COOKIE_HTTP_ONLY": True,  # Http only cookie flag.It's not fetch by javascript.
-    "AUTH_COOKIE_PATH": "/",  # The path of the auth cookie.
-    "AUTH_COOKIE_SAMESITE": None,  # Whether to set the flag restricting cookie leaks on cross-site requests.
-}
+# SIMPLE_JWT = {
+#     "AUTH_HEADER_TYPES": (
+#         "Bearer",
+#         "JWT",
+#     ),
+#     "ACCESS_TOKEN_LIFETIME": timedelta(days=1),
+#     "REFRESH_TOKEN_LIFETIME": timedelta(days=2),
+#     "ROTATE_REFRESH_TOKENS": False,
+#     "SIGNING_KEY": env("SIGNING_KEY"),
+#     "AUTH_HEADER_NAME": "HTTP_AUTHORIZATION",
+#     "AUTH_TOKEN_CLASSES": ("rest_framework_simplejwt.tokens.AccessToken",),
+#     "UPDATE_LAST_LOGIN": True,
+#     "AUTH_COOKIE": "refresh_token",  # Cookie name. Enables cookies if value is set.
+#     "AUTH_COOKIE_DOMAIN": None,  # A string like "example.com", or None for standard domain cookie.
+#     "AUTH_COOKIE_SECURE": False,  # Whether the auth cookies should be secure (https:// only).
+#     "AUTH_COOKIE_HTTP_ONLY": True,  # Http only cookie flag.It's not fetch by javascript.
+#     "AUTH_COOKIE_PATH": "/",  # The path of the auth cookie.
+#     "AUTH_COOKIE_SAMESITE": None,  # Whether to set the flag restricting cookie leaks on cross-site requests.
+# }
 
 DJOSER = {
     "LOGIN_FIELD": "email",
@@ -203,3 +226,4 @@ DJOSER = {
 
 
 PHONENUMBER_DEFAULT_REGION = "GH"
+LOGIN_URL = "/admin/login/"

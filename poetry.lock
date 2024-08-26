@@ -345,6 +345,24 @@ docs = ["furo (>=2021.8.17b43,<2021.9.dev0)", "sphinx (>=3.5.0)", "sphinx-notfou
 testing = ["coverage[toml] (>=5.0a4)", "pytest (>=4.6.11)"]
 
 [[package]]
+name = "django-oauth-toolkit"
+version = "2.4.0"
+description = "OAuth2 Provider for Django"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "django_oauth_toolkit-2.4.0-py3-none-any.whl", hash = "sha256:4931d6bf64b6aee32a42f989f218769d1876f3daa53c6bf883d8ab793fb302ee"},
+    {file = "django_oauth_toolkit-2.4.0.tar.gz", hash = "sha256:8975eaf697413a8d54208ee068bc5ad6d1ed76f1df84e4882fbb25e7e6966e1b"},
+]
+
+[package.dependencies]
+django = ">=3.2,<4.0.0 || >4.0.0"
+jwcrypto = ">=0.8.0"
+oauthlib = ">=3.1.0"
+pytz = ">=2024.1"
+requests = ">=2.13.0"
+
+[[package]]
 name = "django-phonenumber-field"
 version = "8.0.0"
 description = "An international phone number field for django models."
@@ -480,6 +498,22 @@ filetype = ">=1.2.0"
 base64imagefield = ["Pillow (>=6.2.1)"]
 
 [[package]]
+name = "drf-social-oauth2"
+version = "3.1.0"
+description = "drf-social-oauth2 is a frameworks meant to be used with Django and Django Rest Framework."
+optional = false
+python-versions = "*"
+files = [
+    {file = "drf_social_oauth2-3.1.0.tar.gz", hash = "sha256:fbbecd3b960404b167abd06513dcb115262e5595d0794c47bc56f14640da936f"},
+]
+
+[package.dependencies]
+django-oauth-toolkit = ">=0.12.0"
+djangorestframework = ">=3.10.3"
+PyJWT = ">=2.8.0"
+social-auth-app-django = ">=3.1.0"
+
+[[package]]
 name = "filetype"
 version = "1.2.0"
 description = "Infer file type and MIME type of any file/buffer. No external dependencies."
@@ -532,6 +566,21 @@ files = [
     {file = "idna-3.7-py3-none-any.whl", hash = "sha256:82fee1fc78add43492d3a1898bfa6d8a904cc97d8427f683ed8e798d07761aa0"},
     {file = "idna-3.7.tar.gz", hash = "sha256:028ff3aadf0609c1fd278d8ea3089299412a7a8b9bd005dd08b9f8285bcb5cfc"},
 ]
+
+[[package]]
+name = "jwcrypto"
+version = "1.5.6"
+description = "Implementation of JOSE Web standards"
+optional = false
+python-versions = ">= 3.8"
+files = [
+    {file = "jwcrypto-1.5.6-py3-none-any.whl", hash = "sha256:150d2b0ebbdb8f40b77f543fb44ffd2baeff48788be71f67f03566692fd55789"},
+    {file = "jwcrypto-1.5.6.tar.gz", hash = "sha256:771a87762a0c081ae6166958a954f80848820b2ab066937dc8b8379d65b1b039"},
+]
+
+[package.dependencies]
+cryptography = ">=3.4"
+typing-extensions = ">=4.5.0"
 
 [[package]]
 name = "libmagic"
@@ -817,6 +866,17 @@ mysql = ["mysql-connector-python"]
 postgresql = ["psycopg2"]
 
 [[package]]
+name = "pytz"
+version = "2024.1"
+description = "World timezone definitions, modern and historical"
+optional = false
+python-versions = "*"
+files = [
+    {file = "pytz-2024.1-py2.py3-none-any.whl", hash = "sha256:328171f4e3623139da4983451950b28e95ac706e13f3f2630a879749e7a8b319"},
+    {file = "pytz-2024.1.tar.gz", hash = "sha256:2a29735ea9c18baf14b448846bde5a48030ed267578472d8955cd0e7443a9812"},
+]
+
+[[package]]
 name = "requests"
 version = "2.32.3"
 description = "Python HTTP for Humans."
@@ -985,4 +1045,4 @@ brotli = ["brotli"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.12"
-content-hash = "d690ffa178c32667ecebc461589e5b9d4a573cd93ac7919d147c24867146ff3c"
+content-hash = "325c923533cf15a687d7ac6215b105c26fdf37973b66477335be93aef5b37863"
