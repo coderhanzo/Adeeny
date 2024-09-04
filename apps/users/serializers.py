@@ -14,6 +14,7 @@ class CreateUserSerializer(UserCreateSerializer):
         model = User
         fields = [
             "id",
+            "profile_pic",
             "email",
             "first_name",
             "last_name",
@@ -41,6 +42,7 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = [
             "id",
+            "profile_pic",
             "email",
             "first_name",
             "last_name",

@@ -13,7 +13,9 @@ from rest_framework.decorators import (
     api_view,
     permission_classes,
     authentication_classes,
+    parser_classes,
 )
+from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework import status, generics, permissions
 import requests
@@ -134,9 +136,11 @@ def get_all_users(request):
 @api_view(["POST"])
 @permission_classes([AllowAny])
 @transaction.atomic
+@parser_classes([MultiPartParser, FormParser])
 def signup_view(request):
     """Register view for local authentication"""
     user_data = {
+        "profile_pic": request.data.get("profile_pic"),
         "first_name": request.data.get("first_name"),
         "last_name": request.data.get("last_name"),
         "email": request.data.get("email"),
@@ -147,16 +151,6 @@ def signup_view(request):
         # Add other fields as needed
     }
 
-    # if user_data.get("institution_admin"):
-    #     institution_serializer = InstitutionSerializer(
-    #         data={"name": user_data.get("institution_name")}
-    #     )
-    #     institution_serializer.is_valid(raise_exception=True)
-    #     instituation_instance = institution_serializer.save()
-
-    #     user_data["institution"] = instituation_instance.id
-
-    # Post to app db
     serializer = CreateUserSerializer(data=user_data)
     serializer.is_valid(raise_exception=True)
     user = serializer.save()
@@ -164,17 +158,17 @@ def signup_view(request):
     if user:
         # If account creation successful, issue JWT token
         token = RefreshToken().for_user(user)
-        drf_response = Response(
+        response = Response(
             {
                 "access": str(token.access_token),
             }
         )
-        drf_response.set_cookie(
+        response.set_cookie(
             key=settings.SIMPLE_JWT["AUTH_COOKIE"],
             value=str(token),
             httponly=True,
         )
-        return drf_response
+        return response
     return Response(
         {"detail": "Account creation failed"}, status=status.HTTP_400_BAD_REQUEST
     )

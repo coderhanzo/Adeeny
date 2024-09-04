@@ -11,8 +11,7 @@ class SermonSerializer(serializers.ModelSerializer):
     class Meta:
         model = Sermon
         fields = "__all__"
-
-
+    
 class AnnouncementSerializer(serializers.ModelSerializer):
     class Meta:
         model = Announcement

@@ -6,7 +6,10 @@ from phonenumber_field.modelfields import PhoneNumberField
 
 from django.core.exceptions import ValidationError
 
+
 # Create your models here.
+def user_directory_path(instance, filename):
+    return "user_profile_image/{}/{}".format(instance.user_id, filename)
 
 
 class User(AbstractUser):
@@ -17,9 +20,6 @@ class User(AbstractUser):
         USER = "USER", _("User")
 
     username = None
-    def user_directory_path(instance, filename):
-        # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
-        return "{0}/{1}".format("profile_pics", filename)
     profile_pic = models.ImageField(upload_to="profile_pics/", blank=True, null=True)
     name = models.CharField(verbose_name=_("Name"), max_length=250, default="n/a")
     email = models.EmailField(verbose_name=_("Email Address"), unique=True)

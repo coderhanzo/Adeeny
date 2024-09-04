@@ -66,13 +66,6 @@ def get_liked_mosques(request):
 # creating an annoucement and checks if the title already exists
 @api_view(["POST"])
 def create_announcement(request):
-
-    if Announcement.objects.filter(title=request.data["title"]).exists():
-        return Response(
-            {"status": "Announcement with this title already exists"},
-            status=status.HTTP_400_BAD_REQUEST,
-        )
-
     serializer = AnnouncementSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
     serializer.save()
@@ -85,7 +78,7 @@ def create_announcement(request):
 def get_all_announcements(request):
     announcements = Announcement.objects.all()
     serialize = AnnouncementSerializer(announcements, many=True)
-    return Response(serialize.data, status=status.HTTP_200_OK)
+    return Response(serialize.data, status=status.HTTP_200_OK )
 
 
 # deleting annoucement
@@ -104,5 +97,3 @@ def upload_sermon(request):
     serializer.save()
     return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-
-#
