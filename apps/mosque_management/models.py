@@ -5,6 +5,10 @@ from phonenumber_field.modelfields import PhoneNumberField
 
 
 # Create your models here.
+def upload_to(instance, filename):
+    return "mosque_pictures/{filename}".format(filename=filename)
+
+
 class Mosque(models.Model):
     name = models.CharField(verbose_name=_("Mosque Name"), max_length=250, unique=True)
     tel = PhoneNumberField(
@@ -26,17 +30,11 @@ class Mosque(models.Model):
     lat = models.FloatField(verbose_name=_("Latitude"), blank=True, null=True)
     long = models.FloatField(verbose_name=_("Longitude"), blank=True, null=True)
 
-    def user_directory_path(instance, filename):
-        # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
-        return "{0}/{1}".format("mosque_files", filename)
-
     image = models.ImageField(
-        upload_to=user_directory_path,
+        upload_to=upload_to,
         verbose_name=_("Mosque Image"),
-        blank=True,
-        null=True,
     )
-    certificate = models.FileField(upload_to=user_directory_path, blank=True, null=True)
+    certificate = models.FileField(upload_to=upload_to)
 
     additional_info = models.TextField(
         verbose_name=_("Additional Content"), blank=True, null=True
@@ -56,6 +54,10 @@ class PrayerTime(models.Model):
         return self.title
 
 
+def upload_to(instance, filename):
+    return "mosquesermons/{filename}".format(filename=filename)
+
+
 class Sermon(models.Model):
     class SermonType(models.TextChoices):
         audio = "AUDIO", _("Audio")
@@ -69,13 +71,9 @@ class Sermon(models.Model):
         choices=SermonType.choices, max_length=50, default="n/a"
     )
 
-    def user_directory_path(instance, filename):
-        # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
-        return "{0}/{1}".format("sermon files", filename)
-
-    docs = models.FileField(upload_to=user_directory_path, blank=True, null=True)
-    audio = models.FileField(upload_to=user_directory_path, blank=True, null=True)
-    video = models.FileField(upload_to=user_directory_path, blank=True, null=True)
+    docs = models.FileField(upload_to=upload_to, blank=True, null=True)
+    audio = models.FileField(upload_to=upload_to, blank=True, null=True)
+    video = models.FileField(upload_to=upload_to, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True, blank=True, null=True)
     updated_at = models.DateTimeField(auto_now=True, blank=True, null=True)
 

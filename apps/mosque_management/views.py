@@ -72,13 +72,12 @@ def create_announcement(request):
     return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
-
 # returns all annoucements
 @api_view(["GET"])
 def get_all_announcements(request):
     announcements = Announcement.objects.all()
     serialize = AnnouncementSerializer(announcements, many=True)
-    return Response(serialize.data, status=status.HTTP_200_OK )
+    return Response(serialize.data, status=status.HTTP_200_OK)
 
 
 # deleting annoucement
@@ -97,3 +96,27 @@ def upload_sermon(request):
     serializer.save()
     return Response(serializer.data, status=status.HTTP_201_CREATED)
 
+
+@api_view(["GET"])
+def get_all_sermons(request):
+    sermons = Sermon.objects.all()
+    serialize = SermonSerializer(sermons, many=True)
+    return Response(serialize.data, status=status.HTTP_200_OK)
+
+
+@api_view(["DELETE"])
+def delete_sermon(request, id):
+    sermon = Sermon.objects.get(id=id)
+    sermon.delete()
+    return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+def delete_user(request, id):
+    try:
+        sermon = Sermon.objects.get(id=id)
+    except Sermon.DoesNotExist:
+        return Response({"message": "Sermon not found"}, status=status.HTTP_404_NOT_FOUND)
+    sermon.delete()
+    return Response(
+        {"message": "Sermon deleted successfully"}, status=status.HTTP_204_NO_CONTENT
+    )

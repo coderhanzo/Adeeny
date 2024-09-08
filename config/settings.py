@@ -1,7 +1,8 @@
 import os
 import environ
 from pathlib import Path
-import dj_database_url
+
+# import dj_database_url
 
 env = environ.Env(DEBUG=(bool, True))
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -38,7 +39,7 @@ THIRD_PARTY_APPS = [
     "rest_framework_gis",
     "corsheaders",
     "whitenoise",
-    
+    "djmoney",
 ]
 
 LOCAL_APPS = [
@@ -141,9 +142,10 @@ STATIC_URL = "/staticfiles/"
 
 STATICFILE_DIR = []
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
-MEDIA_URL = "/mediafiles/"
-MEDIA_ROOT = os.path.join(BASE_DIR, "/mediafiles")  # BASE_DIR / "mediafiles"
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+MEDIA_URL = "/media/"
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field

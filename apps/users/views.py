@@ -146,11 +146,10 @@ def signup_view(request):
         "email": request.data.get("email"),
         "password": request.data.get("password"),
         "phone_number": request.data.get("phone_number"),
-        "is_verified": request.data.get("is_verified", False),
         "roles": request.data.get("roles", User.Roles.USER),
+        "is_verified": request.data.get("is_verified", False),
         # Add other fields as needed
     }
-
     serializer = CreateUserSerializer(data=user_data)
     serializer.is_valid(raise_exception=True)
     user = serializer.save()
@@ -172,6 +171,19 @@ def signup_view(request):
     return Response(
         {"detail": "Account creation failed"}, status=status.HTTP_400_BAD_REQUEST
     )
+
+
+@api_view(["DELETE"])
+def delete_user(request, id):
+    try:
+        user = User.objects.get(id=id)
+    except User.DoesNotExist:
+        return Response({"message": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+    user.delete()
+    return Response(
+        {"message": "User deleted successfully"}, status=status.HTTP_204_NO_CONTENT
+    )
+    # return Response({"message": "User not found"},status=status.HTTP_404_NOT_FOUND)
 
 
 @api_view(["GET"])

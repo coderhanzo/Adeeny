@@ -21,8 +21,8 @@ class CreateUserSerializer(UserCreateSerializer):
             "phone_number",
             "password",
             "roles",
-            "is_superuser",
-            "is_staff",
+            # "is_superuser",
+            # "is_staff",
         ]
 
     def create(self, validated_data):

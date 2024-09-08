@@ -13,5 +13,6 @@ urlpatterns = [
     path("users/all/", views.get_all_users, name="get_all_users"),
     path("password-reset/", views.custom_password_reset_view),
     path("password-reset-confirm/", views.custom_password_reset_view),
+    path("delete/<int:id>", views.delete_user, name="delete_user"),
     # path("users/filter/", views.GetUsersPerRole.as_view(), name="create_superadmin"),
 ]

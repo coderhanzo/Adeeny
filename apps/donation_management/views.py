@@ -1,3 +1,4 @@
+from django.utils import timezone
 from django.shortcuts import render
 from rest_framework import generics, viewsets, status
 from rest_framework.response import Response
@@ -15,7 +16,7 @@ from rest_framework_simplejwt.authentication import (
     JWTStatelessUserAuthentication,
 )
 from .models import ProjectDonation
-from .serializers import MonetaryDoantionsSerializer, WaqfDonationsSerializer
+from .serializers import MonetaryDonationsSerializer, WaqfDonationsSerializer
 
 # Create your views here.
 
@@ -24,7 +25,7 @@ from .serializers import MonetaryDoantionsSerializer, WaqfDonationsSerializer
 @permission_classes([IsAuthenticated])
 @authentication_classes([JWTAuthentication])
 def create_donation(request):
-    serializer = MonetaryDoantionsSerializer(data=request.data)
+    serializer = MonetaryDonationsSerializer(data=request.data)
     if serializer.is_valid():
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -34,25 +35,28 @@ class GetAllDonations(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        donations = ProjectDonation.objects.all()
-        serializer = MonetaryDoantionsSerializer(donations, many=True)
-        return Response(serializer.data)
+        date = request.query_params.get('date', None)
+        if date:
+            donations = ProjectDonation.objects.filter(date=date)
+        else:
+            donations = ProjectDonation.objects.all()
 
-# filter donations by date
-@api_view(["GET"])
-def get_project_donation_by_date(request, date):
-    donations = ProjectDonation.objects.filter(date=date)
-    serializer = MonetaryDoantionsSerializer(donations, many=True)
-    return Response(serializer.data)
+        serializer = MonetaryDonationsSerializer(donations, many=True)
+        return Response(serializer.data)
 
 # WAQF DONATIONS
 class GetAllWaqfDonations(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        alldonations = ProjectDonation.objects.all()
-        serializer = WaqfDonationsSerializer(alldonations, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        date = request.query_params.get('date', None)
+        if date:
+            donations = ProjectDonation.objects.filter(date=date)
+        else:
+            donations = ProjectDonation.objects.all()
+
+        serializer = WaqfDonationsSerializer(donations, many=True)
+        return Response(serializer.data)
 
 # create waqf donations
 @api_view(["POST"])
@@ -67,3 +71,22 @@ def create_waqf_donation(request):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+# delete a donation when it reaches end date - set it to inactive
+@api_view(["DELETE"])
+def delete_donation(request, id):
+    try:
+        obj = ProjectDonation.objects.get(id=id)
+    except ProjectDonation.DoesNotExist:
+        return Response({"error": "Waqf not found"},status=status.HTTP_404_NOT_FOUND)
+    if obj.end_date <= timezone.now():
+        obj.is_active = False
+        obj.save()
+        serializer = WaqfDonationsSerializer(obj)
+        return Response(
+            {"message":"Project has ended"}, data=serializer.data, status=status.HTTP_200_OK
+        )
+    else:
+        obj.delete()
+        return Response({"message":"WAQF deleted"}, status=status.HTTP_204_NO_CONTENT)
