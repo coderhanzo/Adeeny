@@ -63,13 +63,25 @@ class GetAllWaqfDonations(APIView):
 @permission_classes([IsAuthenticated])
 @authentication_classes([JWTAuthentication])
 def create_waqf_donation(request):
-    serializer = WaqfDonationsSerializer(data=request.data)
     roles = request.user.roles
-    if roles == "ADMIN" or  "IMAM" or "ASSOCIATE":
-        serializer = WaqfDonationsSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+    threshold = 1000000  # Set the threshold amount here
+    
+    # Checking user roles first
+    if roles not in ["ADMIN", "IMAM", "ASSOCIATE"]:
+        return Response({"error": "You do not have permission to make this donation."}, status=status.HTTP_403_FORBIDDEN)
+
+    # handle the amount check
+    if "amount" in request.data:
+        amount = float(request.data["amount"])  # Convert to int for comparison, assuming amount is a number
+        if amount > threshold:
+            return Response({"error": f"Amount must be less than or equal to {threshold}"}, status=status.HTTP_400_BAD_REQUEST)
+    
+    # If both checks pass, proceed with saving the data
+    serializer = WaqfDonationsSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
