@@ -55,7 +55,7 @@ class PrayerTime(models.Model):
 
 
 def upload_to(instance, filename):
-    return "mosquesermons/{filename}".format(filename=filename)
+    return "mosque_sermons/{filename}".format(filename=filename)
 
 
 class Sermon(models.Model):

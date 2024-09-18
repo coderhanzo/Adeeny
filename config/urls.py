@@ -27,4 +27,5 @@ urlpatterns = [
     path("api/auth/", include("djoser.urls.jwt")),
     path("api/v1/", include("apps.donation_management.urls")),
     path("api/v1/", include("apps.mosque_management.urls")),
+    path("api/v2/", include("apps.transactions.urls")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

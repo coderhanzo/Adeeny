@@ -46,6 +46,7 @@ LOCAL_APPS = [
     "apps.users",
     "apps.donation_management",
     "apps.mosque_management",
+    "apps.transactions",
 ]
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
