@@ -19,7 +19,15 @@ class PeoplesPayService:
         return response.json()
 
     @staticmethod
-    def disburse_money(token, amount, account_name, account_number, account_issuer, external_transaction_id, description):
+    def disburse_money(
+        token,
+        amount,
+        account_name,
+        account_number,
+        account_issuer,
+        external_transaction_id,
+        description,
+    ):
         URL = f"{PeoplesPayService.BASE_URL}/disburse"
         payload = {
             "amount": str(amount),
@@ -27,14 +35,17 @@ class PeoplesPayService:
             "account_name": account_name,
             "account_issuer": account_issuer,
             "external_transaction_id": external_transaction_id,
-            "description": description
+            "description": description,
         }
-        headers = {"Content-Type": "application/json", "Authorization": f"Bearer {token}"}
+        headers = {
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {token}",
+        }
         reponse = requests.post(URL, json=payload, headers=headers)
         return reponse.json()
 
     @staticmethod
-    def disburse_money(
+    def process_collection(
         token,
         amount,
         account_name,

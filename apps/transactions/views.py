@@ -11,12 +11,31 @@ class PaymentsView(APIView):
     def post(self, request):
         payment_serializer = PaymentsSerializer(data=request.data)
         if payment_serializer.is_valid():
-            # Using class PeoplesPayService to process the disbursement
-            response = PeoplesPayService.process_disbursement(
-                payment_serializer.validated_data
+            # Extract validated data from the serializer
+            validated_data = payment_serializer.validated_data
+            token_response = PeoplesPayService.get_token(
+                merchant_id="your_merchant_id", api_key="your_api_key"
             )
+            token = token_response.get("data")
+
+            if not token:
+                return Response(
+                    {"message": "Failed to retrieve token"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+            # Use PeoplesPayService to disburse the money
+            response = PeoplesPayService.disburse_money(
+                token=token,
+                amount=validated_data["amount"],
+                account_name=validated_data["account_name"],
+                account_number=validated_data["account_number"],
+                account_issuer=validated_data["account_issuer"],
+                external_transaction_id=validated_data["external_transaction_id"],
+            )
+
             if response["success"]:
-                payment_serializer.save()  # Save payment record in database
+                payment_serializer.save()  # Save payment record in the database
                 return Response(
                     {"message": "Payment processed successfully"},
                     status=status.HTTP_201_CREATED,
@@ -49,7 +68,6 @@ class CollectionsView(APIView):
         return Response(
             collection_serializer.errors, status=status.HTTP_400_BAD_REQUEST
         )
-
 
 class PaymentCallbackAPIView(APIView):
     def post(self, request):
