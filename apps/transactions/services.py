@@ -6,17 +6,25 @@ import requests
 class PeoplesPayService:
     BASE_URL = "https://peoplespay.com.gh/peoplepay/hub"
 
-    @staticmethod
-    def get_token(merchant_id, api_key):
-        url = f"{PeoplesPayService.BASE_URL}/token/get"
-        payload = {
-            "merchant_id": merchant_id,
-            "api_key": api_key,
-            "operation": "CREDIT",
-        }
-        headers = {"Content-Type": "application/json"}
-        response = requests.post(url, json=payload, headers=headers)
-        return response.json()
+    # @staticmethod
+    # def get_token(merchantid, apikey):
+    #     url = f"{PeoplesPayService.BASE_URL}/token/get"
+    #     payload = {
+    #         "merchantid": merchantid,
+    #         "apikey": apikey,
+    #     }
+    #     headers = {"Content-Type": "application/json"}
+    #     try:
+    #         response = requests.post(url, json=payload, headers=headers, timeout=10)
+    #         response_data = response.json()
+
+    #         if response.status_code == 200 and "data" in response_data:
+    #             return response_data
+    #         else:
+    #             return None
+    #     except requests.exceptions.RequestException as e:
+    #         print(f"Error retrieving token: {e}")
+    #         return None
 
     @staticmethod
     def disburse_money(

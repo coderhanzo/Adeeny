@@ -89,4 +89,4 @@ class UserAdmin(BaseUserAdmin):
     search_fields = ["email", "first_name", "last_name", "phone_number", "roles", "email"]
 
 
-admin.site.register(User, UserAdmin)
+admin.site.register(User)

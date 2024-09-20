@@ -1,5 +1,6 @@
 import os
 import environ
+from decouple import config
 from pathlib import Path
 
 # import dj_database_url
@@ -180,6 +181,25 @@ SIMPLE_JWT = {
     "AUTH_COOKIE_SAMESITE": None,  # Whether to set the flag restricting cookie leaks on cross-site requests.
 }
 
+AUTH_PASSWORD_VALIDATORS = [
+    {
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
+    },
+    {
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
+        "OPTIONS": {
+            "min_length": 8,
+        },
+    },
+    {
+        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
+    },
+    {
+        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
+    },
+]
+
+
 DJOSER = {
     "LOGIN_FIELD": "email",
     "USER_CREATE_PASSWORD_RETYPE": True,
@@ -200,9 +220,21 @@ DJOSER = {
     "EMAIL": {
         "confirmation": "apps.users.email.ConfirmationEmail",
         "password_reset": "apps.users.email.PasswordResetEmail",
-        "password_changed_confirmation": "apps.users.email.PasswordChangedConfirmationEmail",
+        "password_changed_confirmation": "apps.templates.email.PasswordChangedConfirmationEmail",
     },
 }
+
+# Email settings
+EMAIL_BACKEND = config("EMAIL_BACKEND")
+EMAIL_HOST = config("EMAIL_HOST")
+EMAIL_PORT = config("EMAIL_PORT")
+EMAIL_USE_TLS = config("EMAIL_USE_TLS")
+EMAIL_HOST_USER = config("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD")
+DEFAULT_FROM_EMAIL = config("DEFAULT_FROM_EMAIL")
+
+MERCHANTID = config("MERCHANTID")
+APIKEY = config("APIKEY")
 
 
 PHONENUMBER_DEFAULT_REGION = "GH"

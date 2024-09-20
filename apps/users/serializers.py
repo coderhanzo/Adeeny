@@ -20,17 +20,23 @@ class CreateUserSerializer(UserCreateSerializer):
             "last_name",
             "phone_number",
             "password",
+            "confirm_password",
             "roles",
-            # "is_superuser",
-            # "is_staff",
         ]
 
+    def verify_password(self, data):
+        if data["password"] != data["confirm_password"]:
+            raise serializers.ValidationError(
+                {"password": "Passwords do not match"}
+            )
+
     def create(self, validated_data):
+        validated_data.pop("confirm_password")
+
         user = User.objects.create_user(**validated_data)
-        if validated_data.get("is_superuser", False):
-            user.is_superuser = True
-            user.is_staff = True
-            user.save()
+        user.set_password(validated_data["password"])
+        user.save()
+
         return user
 
 
@@ -46,7 +52,7 @@ class UserSerializer(serializers.ModelSerializer):
             "email",
             "first_name",
             "last_name",
-            "full_name",
+            "other_name",
             "phone_number",
             "roles",
             "is_verified",

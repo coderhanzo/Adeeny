@@ -104,12 +104,6 @@ def login_view(request):
         )
 
 
-# update user instance when user is_verified is true
-@api_view(["PUT"])
-def update_user(request):
-    user = request.user
-
-
 @api_view(["GET"])
 @permission_classes([AllowAny])
 @authentication_classes([JWTAuthentication])
@@ -117,20 +111,6 @@ def get_all_users(request):
     serializer = UserSerializer(data=User.objects.all(), many=True)
     serializer.is_valid()
     return Response({"users": serializer.data}, status=status.HTTP_200_OK)
-
-
-# def generate_unique_slug(model_class, title):
-#     """
-#     django-scheduler models aren't great but i'd rather not touch them/
-#     This function is here so that the slug field in the Calendar model is unique
-#     """
-#     original_slug = slugify(title)
-#     unique_slug = original_slug
-#     num = 1
-#     while model_class.objects.filter(slug=unique_slug).exists():
-#         unique_slug = "{}-{}".format(original_slug, num)
-#         num += 1
-#     return unique_slug
 
 
 @api_view(["POST"])
@@ -145,6 +125,7 @@ def signup_view(request):
         "last_name": request.data.get("last_name"),
         "email": request.data.get("email"),
         "password": request.data.get("password"),
+        "confirm_password": request.data.get("confirm_password"),
         "phone_number": request.data.get("phone_number"),
         "roles": request.data.get("roles", User.Roles.USER),
         "is_verified": request.data.get("is_verified", False),
@@ -155,6 +136,13 @@ def signup_view(request):
     user = serializer.save()
 
     if user:
+        user.generate_otp_code()
+        send_mail(
+            "Your OTP Code",
+            f"Your OTP code is {user.otp_code}",
+            settings.DEFAULT_FROM_EMAIL,
+            [user.email],
+        )
         # If account creation successful, issue JWT token
         token = RefreshToken().for_user(user)
         response = Response(
@@ -179,11 +167,17 @@ def delete_user(request, id):
         user = User.objects.get(id=id)
     except User.DoesNotExist:
         return Response({"message": "User not found"}, status=status.HTTP_404_NOT_FOUND)
-    user.delete()
-    return Response(
-        {"message": "User deleted successfully"}, status=status.HTTP_204_NO_CONTENT
-    )
-    # return Response({"message": "User not found"},status=status.HTTP_404_NOT_FOUND)
+    if user.is_verified:
+        user.is_active = False
+        user.save()
+        return Response(
+            {"message": "User has been deactivated"}, status=status.HTTP_200_OK
+        )
+    else:
+        user.delete()
+        return Response(
+            {"message": "User deleted successfully"}, status=status.HTTP_204_NO_CONTENT
+        )
 
 
 @api_view(["GET"])

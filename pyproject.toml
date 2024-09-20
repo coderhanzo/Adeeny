@@ -28,6 +28,7 @@ django-cors-headers = "^4.4.0"
 drf-base64 = "^2.0"
 mysqlclient = "^2.2.4"
 django-money = "^3.5.3"
+python-decouple = "^3.8"
 
 
 [build-system]
