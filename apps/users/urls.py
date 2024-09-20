@@ -14,5 +14,6 @@ urlpatterns = [
     path("password-reset/", views.custom_password_reset_view),
     path("password-reset-confirm/", views.custom_password_reset_view),
     path("delete/<int:id>", views.delete_user, name="delete_user"),
+    path("verify-otp/", views.verify_otp_view, name="verify_otp"),
     # path("users/filter/", views.GetUsersPerRole.as_view(), name="create_superadmin"),
 ]

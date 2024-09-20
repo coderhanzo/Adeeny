@@ -218,7 +218,8 @@ DJOSER = {
         "user_delete": "djoser.serializers.UserDeleteSerializer",
     },
     "EMAIL": {
-        "confirmation": "apps.users.email.ConfirmationEmail",
+        "activation": "apps.users.email.ActivationEmail",
+        # "confirmation": "apps.users.email.ConfirmationEmail",
         "password_reset": "apps.users.email.PasswordResetEmail",
         "password_changed_confirmation": "apps.templates.email.PasswordChangedConfirmationEmail",
     },

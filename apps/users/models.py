@@ -4,6 +4,7 @@ from django.utils.translation import gettext_lazy as _
 from .managers import CustomUserManager
 from phonenumber_field.modelfields import PhoneNumberField
 from datetime import timedelta, datetime
+from django.utils import timezone
 from django.core.exceptions import ValidationError
 import random, string
 
@@ -73,20 +74,21 @@ class User(AbstractUser):
     class Meta:
         verbose_name = "User"
         verbose_name_plural = "Users"
-    
+
     def generate_otp_code(self):
         self.otp_code = "".join(random.choices(string.digits, k=6))
-        self.otp_expiry = datetime.now() + timedelta(minutes=5)
+        self.otp_expiry = timezone.now() + timedelta(minutes=5)
         self.save()
 
     def verify_otp_code(self, otp):
-        is_valid = self.otp_code == otp and self.otp_expiry > datetime.now()
-        if is_valid:
+        # is_valid = self.otp_code == otp and self.otp_expiry > datetime.now()
+        if self.otp_code == otp and self.otp_expiry > timezone.now():
+            self.is_verified = True
             self.otp_code = None
             self.otp_expiry = None
-            self.is_verified = True
             self.save()
-            return is_valid
+            return True
+        return False
 
     def __str__(self):
         return f"{self.first_name} {self.other_name} {self.last_name}"

@@ -66,42 +66,77 @@ def login_view(request):
     """Login view for local authentication"""
     email = request.data.get("email")
     password = request.data.get("password")
-    is_verified = request.data.get("is_verified")
 
-    user = authenticate(
-        request,
-        email=email,
-        password=password,
-    )
+    # Authenticate the user by email and password
+    user = authenticate(request, email=email, password=password)
 
-    if user and user.is_active:
-        if is_verified:
-            user.is_verified = True
-            user.save()
+    if user is not None:
+        # Check if the user is in a role that requires OTP
+        if user.roles in [User.Roles.ADMIN, User.Roles.IMAM, User.Roles.ASSCOCIATE]:
+            user.generate_otp_code()
+            send_mail(
+                "Your OTP Code",
+                f"Dear {user.get_full_name}, your OTP code is {user.otp_code}.",
+                settings.DEFAULT_FROM_EMAIL,
+                [user.email],
+            )
+            return Response(
+                {"message": "OTP sent. Please check your email to verify."},
+                status=status.HTTP_200_OK,
+            )
 
-        if user.is_verified:
-            token = RefreshToken().for_user(user)
-            drf_response = Response(
+        # If the user is verified, generate a JWT token and log them in
+        if user.is_verified and user.is_active:
+            token = RefreshToken.for_user(user)
+            response = Response(
                 {
                     "access": str(token.access_token),
                 }
             )
-            drf_response.set_cookie(
+            response.set_cookie(
                 key=settings.SIMPLE_JWT["AUTH_COOKIE"],
                 value=str(token),
                 httponly=True,
             )
+            return response
 
-            return drf_response
-        else:
-            return Response(
-                {"detail": "Account not verified"}, status=status.HTTP_401_UNAUTHORIZED
-            )
-
-    else:
         return Response(
-            {"detail": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED
+            {"detail": "Account not verified or inactive. Please verify your account."},
+            status=status.HTTP_401_UNAUTHORIZED,
         )
+
+    return Response(
+        {"detail": "Invalid credentials. Please try again."},
+        status=status.HTTP_401_UNAUTHORIZED,
+    )
+
+
+@api_view(["POST"])
+@permission_classes([AllowAny])
+def verify_otp_view(request):
+    email = request.data.get("email")
+    otp = request.data.get("otp")
+
+    try:
+        user = User.objects.get(email=email)
+    except User.DoesNotExist:
+        return Response({"detail": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    if user.verify_otp_code(otp):
+        token = RefreshToken.for_user(user)
+        response = Response(
+            {
+                "access": str(token.access_token),
+            }
+        )
+        response.set_cookie(
+            key=settings.SIMPLE_JWT["AUTH_COOKIE"],
+            value=str(token),
+            httponly=True,
+        )
+        return response
+
+    return Response({"detail": "Invalid OTP code"}, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(["GET"])
@@ -122,6 +157,7 @@ def signup_view(request):
     user_data = {
         "profile_pic": request.data.get("profile_pic"),
         "first_name": request.data.get("first_name"),
+        "other_name": request.data.get("other_name"),
         "last_name": request.data.get("last_name"),
         "email": request.data.get("email"),
         "password": request.data.get("password"),
@@ -139,7 +175,7 @@ def signup_view(request):
         user.generate_otp_code()
         send_mail(
             "Your OTP Code",
-            f"Your OTP code is {user.otp_code}",
+            f"Dear User, your OTP code is {user.otp_code}",
             settings.DEFAULT_FROM_EMAIL,
             [user.email],
         )

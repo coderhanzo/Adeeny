@@ -18,9 +18,9 @@ from rest_framework_simplejwt.authentication import (
 from .models import ProjectDonation
 from .serializers import MonetaryDonationsSerializer, WaqfDonationsSerializer
 
+
+
 # Create your views here.
-
-
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
 @authentication_classes([JWTAuthentication])
