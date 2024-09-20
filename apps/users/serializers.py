@@ -17,6 +17,7 @@ class CreateUserSerializer(UserCreateSerializer):
             "profile_pic",
             "email",
             "first_name",
+            "other_name",
             "last_name",
             "phone_number",
             "password",
@@ -26,9 +27,7 @@ class CreateUserSerializer(UserCreateSerializer):
 
     def verify_password(self, data):
         if data["password"] != data["confirm_password"]:
-            raise serializers.ValidationError(
-                {"password": "Passwords do not match"}
-            )
+            raise serializers.ValidationError({"password": "Passwords do not match"})
 
     def create(self, validated_data):
         validated_data.pop("confirm_password")
@@ -41,7 +40,7 @@ class CreateUserSerializer(UserCreateSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
-    full_name = serializers.SerializerMethodField(source="get_full_name")
+    full_name = serializers.SerializerMethodField()
     phone_number = PhoneNumberField()
 
     class Meta:
@@ -56,6 +55,7 @@ class UserSerializer(serializers.ModelSerializer):
             "phone_number",
             "roles",
             "is_verified",
+            "full_name",
         ]
 
     def get_full_name(self, obj):
