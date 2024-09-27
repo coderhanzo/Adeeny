@@ -33,8 +33,10 @@ class Mosque(models.Model):
     image = models.ImageField(
         upload_to=upload_to,
         verbose_name=_("Mosque Image"),
+        blank=True,
+        null=True,
     )
-    certificate = models.FileField(upload_to=upload_to)
+    certificate = models.FileField(upload_to=upload_to, blank=True, null=True)
 
     additional_info = models.TextField(
         verbose_name=_("Additional Content"), blank=True, null=True

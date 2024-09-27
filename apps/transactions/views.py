@@ -5,7 +5,22 @@ from rest_framework.views import APIView
 from .models import Payments, Collections
 from .serializers import PaymentsSerializer, CollectionsSerializer
 from .services import PeoplesPayService
+from django.urls import reverse
 import requests
+import uuid
+
+
+class TokenView(APIView):
+    def get(self, request):
+        token = PeoplesPayService.get_token()
+
+        if token:
+            return Response({"token": token}, status=status.HTTP_200_OK)
+        else:
+            return Response(
+                {"message": "Failed to retrieve token"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
 
 class PaymentsView(APIView):
@@ -70,6 +85,9 @@ class CollectionsView(APIView):
     def post(self, request):
         collection_serializer = CollectionsSerializer(data=request.data)
 
+        external_transaction_id = uuid.uuid4()
+        validated_data["external_transaction_id"] = external_transaction_id
+
         if collection_serializer.is_valid():
             validated_data = collection_serializer.validated_data
 
@@ -81,15 +99,18 @@ class CollectionsView(APIView):
                     {"message": "Failed to retrieve token"},
                     status=status.HTTP_400_BAD_REQUEST,
                 )
-
+            # calls the endpoint payment-callback and assign it to a variable callback_url which
+            # will be used in the collection payload
+            callback_url = request.build_absolute_uri(reverse("payment-callback"))
             # Process the collection
             collection_payload = {
                 "amount": str(validated_data["amount"]),
                 "account_number": validated_data["account_number"],
                 "account_name": validated_data["account_name"],
                 "account_issuer": validated_data["account_issuer"],
-                "callbackUrl": validated_data["callback_url"],
+                "callbackUrl": callback_url,
                 "description": "Collection description",
+                "external_transaction_id": str(external_transaction_id),
             }
             collection_headers = {
                 "Content-Type": "application/json",
@@ -107,7 +128,9 @@ class CollectionsView(APIView):
                 if collection_response.status_code == 200 and collection_data.get(
                     "success"
                 ):
-                    collection_serializer.save()  # Save collection record to the database
+                    collection_serializer.save(
+                        external_transaction_id=external_transaction_id
+                    )  # Save collection record to the database
                     return Response(
                         {"message": "Collection processed successfully"},
                         status=status.HTTP_201_CREATED,

@@ -21,7 +21,7 @@ DEBUG = env("DEBUG")
 
 ALLOWED_HOSTS = env("ALLOWED_HOSTS").split(" ")
 
-
+CORS_ALLOWED_ORIGINS = env("CORS_ALLOWED_ORIGINS").split(" ")
 # Application definition
 DJANGO_APPS = [
     "django.contrib.admin",
@@ -57,6 +57,7 @@ MIDDLEWARE = [
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
@@ -96,12 +97,12 @@ WSGI_APPLICATION = "config.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": env("MYSQL_ENGINE"),
-        "NAME": env("MYSQL_NAME"),
-        "USER": env("MYSQL_USER"),
-        "PASSWORD": env("MYSQL_PASSWORD"),
-        "HOST": env("MYSQL_HOST"),
-        "PORT": env("MYSQL_PORT"),
+        "ENGINE": os.getenv("MYSQL_ENGINE"),
+        "NAME": os.getenv("MYSQL_NAME"),
+        "USER": os.getenv("MYSQL_USER"),
+        "PASSWORD": os.getenv("MYSQL_PASSWORD"),
+        "HOST": os.getenv("MYSQL_HOST", "mysql-db"),
+        "PORT": os.getenv("MYSQL_PORT"),
     }
 }
 

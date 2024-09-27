@@ -19,12 +19,15 @@ services:
       - adeeny-network
 
   web:
+    # drf-backend:
     container_name: Adeeny-django-web
     build:
       context: .
       dockerfile: ./docker/Dockerfile
-    # command: ["./build_script.sh"]
-    command: python manage.py runserver 0.0.0.0:8000
+    # entrypoint: ["./docker/build.sh"]
+    command: ./wait-for-it.sh mysql-db:3306 -- gunicorn config.wsgi:application --bind 0.0.0.0:8000
+    # command: gunicorn config.wsgi:application --bind 0.0.0.0:8000
+    # command: python manage.py runserver 0.0.0.0:8000
     volumes:
       - .:/app
       - static_volume:/app/staticfiles

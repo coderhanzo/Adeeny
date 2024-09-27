@@ -1,24 +1,16 @@
-#!/bin/bash
+#!/bin/sh
 
-set -o errexit
-
-set -o pipefail
-
-set -o nounset
-
-# Apply database migrations for the 'users' app first
-# echo "Apply database migrations for the users app"
-# python manage.py migrate users
-
-python manage.py makemigrations --noinput
+# Wait for the database to be ready
+./wait-for-it.sh mysql-db:3306 --timeout=30 --strict -- echo "MySQL is up and running!"
 
 # Apply database migrations
-echo "Applying general database migrations"
+echo "Applying database migrations..."
 python manage.py migrate --noinput
 
 # Collect static files
-python3 manage.py collectstatic --noinput
+echo "Collecting static files..."
+python manage.py collectstatic --noinput
 
-# Start Gunicorn
-gunicorn --workers 3 --bind 0.0.0.0:8000 config.wsgi:application
-# python manage.py runserver 0.0.0.0:8000
+# Start the Django server
+echo "Starting the server..."
+exec "$@"

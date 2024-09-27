@@ -3,7 +3,8 @@ from . import views
 
 
 urlpatterns = [
-  path("payments/", views.PaymentsView.as_view()),
-  path("collections/", views.CollectionsView.as_view()),
-  path("callback/", views.PaymentCallbackAPIView.as_view()),
+    path("payments/", views.PaymentsView.as_view()),
+    path("collections/", views.CollectionsView.as_view()),
+    path("payment-callback/", views.PaymentCallbackAPIView.as_view()),
+    path("token/", views.TokenView.as_view()),
 ]
