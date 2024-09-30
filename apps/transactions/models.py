@@ -7,7 +7,7 @@ import uuid
 # Create your models here.
 
 # 2 tables: payments(donations) and collections(WAQF donations)
-User = get_user_model()
+# User = get_user_model()
 
 
 # this model will replace donations
@@ -17,7 +17,9 @@ class Payments(models.Model):
         ("TELECEL", "Telecel"),
         ("AIRTELTIGO", "AirtelTigo"),
     )
-    external_transaction_id = models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True)
+    external_transaction_id = models.UUIDField(
+        default=uuid.uuid4, editable=False, primary_key=True
+    )
     amount = models.CharField(max_length=100)
     account_name = models.CharField(max_length=100)
     account_number = models.CharField(max_length=100)
@@ -33,9 +35,9 @@ class Payments(models.Model):
 # this model will replace WAQF donations/ projectdonations
 class Collections(models.Model):
     NETWORK_TYPE_CHOICES = (
-        ("MTN", "MTN"),
-        ("TELECEL", "Telecel"),
-        ("AIRTELTIGO", "AirtelTigo"),
+        ("MTN", "mtn"),
+        ("vodafone", "vodafone"),
+        ("AIRTELTIGO", "airteltigo"),
     )
     PAYMENT_STATUS_CHOICES = [
         ("pending", "Pending"),
@@ -51,6 +53,9 @@ class Collections(models.Model):
     account_issuer = models.CharField(max_length=100, choices=NETWORK_TYPE_CHOICES)
     callback_url = models.URLField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    external_transaction_id = models.UUIDField(
+        default=uuid.uuid4, editable=False, primary_key=True
+    )
 
     def __str__(self):
         return f"Collection: {self.amount} - {self.transaction_status} - {self.external_transaction_id}"

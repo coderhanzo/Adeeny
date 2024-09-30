@@ -85,23 +85,28 @@ class CollectionsView(APIView):
     def post(self, request):
         collection_serializer = CollectionsSerializer(data=request.data)
 
+        # Generate the external_transaction_id at the start
         external_transaction_id = uuid.uuid4()
-        validated_data["external_transaction_id"] = external_transaction_id
+        print("take a look")
 
         if collection_serializer.is_valid():
+            print("if passed")
             validated_data = collection_serializer.validated_data
+
+            # Assign the external_transaction_id to the validated data after it is available
+            validated_data["external_transaction_id"] = external_transaction_id
 
             # Get the token using the PeoplesPayService
             token = PeoplesPayService.get_token()
-            print(f"second token: {token}")
             if token is None:
                 return Response(
                     {"message": "Failed to retrieve token"},
                     status=status.HTTP_400_BAD_REQUEST,
                 )
-            # calls the endpoint payment-callback and assign it to a variable callback_url which
-            # will be used in the collection payload
+
+            # Generate callback URL for PeoplesPay
             callback_url = request.build_absolute_uri(reverse("payment-callback"))
+
             # Process the collection
             collection_payload = {
                 "amount": str(validated_data["amount"]),
@@ -110,7 +115,7 @@ class CollectionsView(APIView):
                 "account_issuer": validated_data["account_issuer"],
                 "callbackUrl": callback_url,
                 "description": "Collection description",
-                "external_transaction_id": str(external_transaction_id),
+                "externalTransactionId": str(external_transaction_id),
             }
             collection_headers = {
                 "Content-Type": "application/json",
@@ -118,19 +123,33 @@ class CollectionsView(APIView):
             }
 
             try:
+                print("trying to send collection")
+                print(collection_payload)
                 collection_response = requests.post(
                     f"{PeoplesPayService.BASE_URL}/collectmoney",
                     json=collection_payload,
                     headers=collection_headers,
                 )
                 collection_data = collection_response.json()
+                print(collection_data)
 
                 if collection_response.status_code == 200 and collection_data.get(
                     "success"
                 ):
+                    # Save collection record, including external_transaction_id
                     collection_serializer.save(
                         external_transaction_id=external_transaction_id
-                    )  # Save collection record to the database
+                    )
+
+                    # Create a corresponding payment entry with the same external_transaction_id
+                    Payments.objects.create(
+                        external_transaction_id=external_transaction_id,
+                        amount=validated_data["amount"],
+                        account_name=validated_data["account_name"],
+                        account_number=validated_data["account_number"],
+                        account_issuer=validated_data["account_issuer"],
+                    )
+
                     return Response(
                         {"message": "Collection processed successfully"},
                         status=status.HTTP_201_CREATED,
