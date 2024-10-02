@@ -8,7 +8,9 @@ from .services import PeoplesPayService
 from django.urls import reverse
 import requests
 import uuid
+import logging
 
+logger = logging.getLogger(__name__)
 
 class TokenView(APIView):
     def get(self, request):
@@ -178,22 +180,33 @@ class CollectionsView(APIView):
 class PaymentCallbackAPIView(APIView):
     def post(self, request):
         transaction_id = request.data.get("transactionId")
-        status = request.data.get("success")
+        payment_status = request.data.get("success") in ["true", True, "1"]
+
+        # Validate incoming data
+        if not transaction_id or payment_status is None:
+            return Response(
+                {"error": "Missing required fields: transactionId or success"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         # Find the collection related to this transaction using external_transaction_id
         try:
             collection = Collections.objects.get(external_transaction_id=transaction_id)
-            if status == "true":
+            if payment_status:
                 collection.transaction_status = "completed"
             else:
                 collection.transaction_status = "failed"
             collection.save()
 
             return Response(
-                {"message": "Callback processed successfully"},
+                {
+                    "message": "Callback processed successfully",
+                    "status": collection.transaction_status,
+                },
                 status=status.HTTP_200_OK,
             )
         except Collections.DoesNotExist:
+            logger.warning(f"Transaction with ID {transaction_id} not found.")
             return Response(
                 {"error": "Transaction not found"}, status=status.HTTP_404_NOT_FOUND
             )
