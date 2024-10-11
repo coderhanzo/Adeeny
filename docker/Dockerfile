@@ -30,13 +30,13 @@ COPY pyproject.toml poetry.lock ./
 # Install Poetry environment
 RUN poetry config virtualenvs.create false && poetry install && rm -rf $POETRY_CACHE_DIR
 
-# COPY ./docker/entry /entry
-# RUN sed -i 's/\r$//g' /entry
-# RUN chmod +x /entry
+# COPY ./docker/entrypoint.sh /entrypoint
+# RUN sed -i 's/\r$//g' /entrypoint
+# RUN chmod +x /entrypoint
 
-# COPY ./docker/build /build
-# RUN sed -i 's/\r$//g' /build
-# RUN chmod +x /build
+# COPY ./docker/start.sh /start
+# RUN sed -i 's/\r$//g' /
+# RUN chmod +x /start
 
 COPY . .
 

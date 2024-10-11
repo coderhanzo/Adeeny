@@ -13,9 +13,9 @@ import uuid
 # this model will replace donations
 class Payments(models.Model):
     NETWORK_TYPE_CHOICES = (
-        ("MTN", "MTN"),
-        ("TELECEL", "Telecel"),
-        ("AIRTELTIGO", "AirtelTigo"),
+        ("MTN", "mtn"),
+        ("vodafone", "vodafone"),
+        ("AIRTELTIGO", "airteltigo"),
     )
     external_transaction_id = models.UUIDField(
         default=uuid.uuid4, editable=False, primary_key=True
